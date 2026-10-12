@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#4AAEE8">
+
+  <title>Canto</title>
+
+  <!-- Song viewer stylesheet -->
+  <link rel="stylesheet" href="css/songbook-viewer.css">
+</head>
+
+<body class="song-viewer-page">
+
+  <header class="song-viewer-header">
+
+    <!-- Guitar tuner: LEFT -->
+    
+<!-- Guitar tuner: LEFT -->
+<button
+  id="openTuner"
+  class="header-action guitar-button"
+  type="button"
+  aria-label="Apri accordatore"
+  title="Accordatore"
+>
+  🎸
+</button>
+
+
+    <!-- Transposition: CENTER -->
+    <div
+      class="transpose-controls"
+      role="group"
+      aria-label="Trasposizione"
+    >
+      <button
+        id="transposeDown"
+        class="transpose-button"
+        type="button"
+        aria-label="Abbassa di un semitono"
+      >
+        −
+      </button>
+
+      <button
+        id="transposeReset"
+        class="transpose-value"
+        type="button"
+        aria-label="Ripristina tonalità originale"
+        title="Ripristina tonalità originale"
+      >
+        0
+      </button>
+
+      <button
+        id="transposeUp"
+        class="transpose-button"
+        type="button"
+        aria-label="Alza di un semitono"
+      >
+        +
+      </button>
+    </div>
+
+    <!-- Close: RIGHT -->
+    <button
+      id="closeViewer"
+      class="header-action"
+      type="button"
+      aria-label="Chiudi canto"
+      title="Chiudi"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m6 6 12 12M18 6 6 18"/>
+      </svg>
+    </button>
+
+  </header>
+
+  <!-- Song content -->
+  <main class="song-viewport">
+    <iframe
+      id="songFrame"
+      title="Testo del canto"
+      src="about:blank"
+    ></iframe>
+  </main>
+
+  <!-- Song viewer JavaScript -->
+  <script src="js/songbook-viewer.js"></script>
+
+</body>
+</html>

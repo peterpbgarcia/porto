@@ -1,0 +1,1033 @@
+/* ==========================================================
+   GUITAR TUNER
+   Tuner-specific styling
+   Uses universal style.css for:
+   body
+   header
+   typography
+   mobile layout
+   colors
+========================================================== */
+
+
+/* ==========================================================
+   TUNER PAGE
+========================================================== */
+
+.tuner-page {
+
+    width: 100%;
+
+    max-width: 620px;
+
+    margin: 0 auto;
+
+    padding: 16px 14px 40px;
+
+}
+
+
+/* ==========================================================
+   MAIN TUNER
+========================================================== */
+
+.tuner-card {
+
+    position: relative;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff 0%,
+            #f7fcff 100%
+        );
+
+    border-radius: 26px;
+
+    padding:
+        25px 18px 22px;
+
+    text-align: center;
+
+    box-shadow:
+        0 8px 28px rgba(
+            42,
+            103,
+            135,
+            0.10
+        );
+
+}
+
+
+/* ==========================================================
+   SUBTLE TOP LINE
+========================================================== */
+
+.tuner-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 12%;
+
+    width: 76%;
+
+    height: 3px;
+
+    border-radius:
+        0 0 4px 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #7ec8f5,
+            #4aaee8,
+            #7ec8f5,
+            transparent
+        );
+
+}
+
+
+/* ==========================================================
+   NOTE DISPLAY
+========================================================== */
+
+.note-display {
+
+    position: relative;
+
+    margin-bottom: 17px;
+
+}
+
+
+.detected-note {
+
+    font-size: 82px;
+
+    font-weight: 700;
+
+    line-height: 0.90;
+
+    letter-spacing: -3px;
+
+    color: #213f50;
+
+    transition:
+        color 0.18s ease,
+        transform 0.18s ease;
+
+}
+
+
+.detected-octave {
+
+    margin-top: 9px;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+    color: #57717f;
+
+}
+
+
+.detected-frequency {
+
+    margin-top: 4px;
+
+    font-size: 13px;
+
+    letter-spacing: 0.2px;
+
+    color: #78909c;
+
+}
+
+
+/* ==========================================================
+   TUNING METER
+========================================================== */
+
+.tuning-meter {
+
+    position: relative;
+
+    width: 100%;
+
+    margin:
+        18px auto 5px;
+
+}
+
+
+.meter-labels {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding:
+        0 1px;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    color: #91a7b2;
+
+}
+
+
+.meter-track {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 8px;
+
+    margin-top: 13px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #dceff9 0%,
+            #e9f6fb 42%,
+            #dff5e9 50%,
+            #e9f6fb 58%,
+            #dceff9 100%
+        );
+
+}
+
+
+.meter-center {
+
+    position: absolute;
+
+    z-index: 2;
+
+    top: -9px;
+
+    left: 50%;
+
+    width: 2px;
+
+    height: 26px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 3px;
+
+    background: #63b6df;
+
+}
+
+
+.meter-indicator {
+
+    position: absolute;
+
+    z-index: 3;
+
+    top: 50%;
+
+    left: 50%;
+
+    width: 24px;
+
+    height: 24px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: #4aaee8;
+
+    border:
+        3px solid #ffffff;
+
+    box-shadow:
+        0 2px 8px rgba(
+            42,
+            116,
+            151,
+            0.28
+        );
+
+    transition:
+        left 0.10s ease,
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+
+}
+
+
+/* ==========================================================
+   TUNING STATUS
+========================================================== */
+
+.tuning-status {
+
+    margin-top: 20px;
+
+    font-size: 24px;
+
+    font-weight: 700;
+
+    line-height: 1.1;
+
+    color: #5d737e;
+
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
+
+}
+
+
+.tuning-status.in-tune {
+
+    color: #32a568;
+
+}
+
+
+.tuning-status.flat {
+
+    color: #4aaee8;
+
+}
+
+
+.tuning-status.sharp {
+
+    color: #d9534f;
+
+}
+
+
+/* ==========================================================
+   CENTS
+========================================================== */
+
+.cents-display {
+
+    min-height: 19px;
+
+    margin-top: 6px;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    color: #718690;
+
+}
+
+
+/* ==========================================================
+   MICROPHONE STATUS
+========================================================== */
+
+.microphone-status {
+
+    min-height: 20px;
+
+    margin-top: 14px;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+
+    color: #7a8e97;
+
+}
+
+
+/* ==========================================================
+   START BUTTON
+========================================================== */
+
+.start-button {
+
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    margin-top: 17px;
+
+    padding: 13px 18px;
+
+    border:
+        1px solid rgba(
+            255,
+            255,
+            255,
+            0.35
+        );
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7ec8f5,
+            #4aaee8
+        );
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.1px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 13px rgba(
+            74,
+            174,
+            232,
+            0.23
+        );
+
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        background 0.15s ease;
+
+}
+
+
+.start-button:hover {
+
+    box-shadow:
+        0 6px 16px rgba(
+            74,
+            174,
+            232,
+            0.30
+        );
+
+}
+
+
+.start-button:active {
+
+    transform:
+        translateY(1px);
+
+}
+
+
+.start-button.running {
+
+    background:
+        linear-gradient(
+            135deg,
+            #6f9fb5,
+            #5b879e
+        );
+
+    box-shadow:
+        0 4px 10px rgba(
+            60,
+            100,
+            120,
+            0.20
+        );
+
+}
+
+
+/* ==========================================================
+   STRINGS SECTION
+========================================================== */
+
+.strings-section {
+
+    width: 100%;
+
+    margin-top: 18px;
+
+}
+
+
+/* ==========================================================
+   AUTO / MANUAL MODE
+========================================================== */
+
+#tuning-mode-controls {
+
+    width: 100%;
+
+    margin-bottom: 10px;
+
+}
+
+
+.tuning-mode-buttons {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    width: 100%;
+
+    max-width: 420px;
+
+    margin: 0 auto;
+
+    padding: 0;
+
+    background: transparent;
+
+}
+
+
+.mode-button {
+
+    flex: 1;
+
+    min-width: 0;
+
+    padding:
+        11px 16px;
+
+    border:
+        1px solid #9fd4ef;
+
+    border-radius: 13px;
+
+    background:
+        #ffffff;
+
+    color: #3986b2;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 7px rgba(
+            74,
+            174,
+            232,
+            0.10
+        );
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.12s ease,
+        box-shadow 0.15s ease;
+
+}
+
+
+.mode-button:hover {
+
+    background:
+        #f2faff;
+
+}
+
+
+.mode-button.active {
+
+    background:
+        linear-gradient(
+            135deg,
+            #7ec8f5,
+            #4aaee8
+        );
+
+    border-color:
+        #4aaee8;
+
+    color:
+        #ffffff;
+
+    box-shadow:
+        0 4px 10px rgba(
+            74,
+            174,
+            232,
+            0.22
+        );
+
+}
+
+
+.mode-button:active {
+
+    transform:
+        scale(0.97);
+
+}
+
+
+.mode-button:focus-visible {
+
+    outline:
+        2px solid rgba(
+            74,
+            174,
+            232,
+            0.40
+        );
+
+    outline-offset:
+        2px;
+
+}
+
+
+/* ==========================================================
+   STRING ROW
+========================================================== */
+
+.strings-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, 1fr);
+
+    width: 100%;
+
+    gap: 5px;
+
+}
+
+
+/* ==========================================================
+   STRING BUTTON
+========================================================== */
+
+.string-button {
+
+    position: relative;
+
+    min-width: 0;
+
+    min-height: 61px;
+
+    padding:
+        10px 2px 7px;
+
+    border:
+        1px solid #d7eaf3;
+
+    border-radius: 12px;
+
+    background:
+        #ffffff;
+
+    color: #3c5b69;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 6px rgba(
+            40,
+            100,
+            130,
+            0.06
+        );
+
+    transition:
+        border-color 0.12s ease,
+        background 0.12s ease,
+        color 0.12s ease,
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
+
+}
+
+
+/* Decorative line */
+
+.string-button::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 28%;
+
+    width: 44%;
+
+    height: 2px;
+
+    border-radius:
+        0 0 3px 3px;
+
+    background:
+        #d8edf7;
+
+}
+
+
+.string-button:active {
+
+    transform:
+        scale(0.96);
+
+}
+
+
+.string-button:hover {
+
+    background:
+        #f7fcff;
+
+}
+
+
+/* ==========================================================
+   STRING NOTE
+========================================================== */
+
+.string-note {
+
+    display: block;
+
+    font-size: 21px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+}
+
+
+/* ==========================================================
+   STRING OCTAVE
+========================================================== */
+
+.string-octave {
+
+    display: block;
+
+    min-height: 14px;
+
+    margin-top: 5px;
+
+    font-size: 10px;
+
+    line-height: 1;
+
+    color: #81959f;
+
+}
+
+
+/* ==========================================================
+   HIDE OCTAVE FOR A / D / G / B
+========================================================== */
+
+.string-button[data-note="A2"] .string-octave,
+.string-button[data-note="D3"] .string-octave,
+.string-button[data-note="G3"] .string-octave,
+.string-button[data-note="B3"] .string-octave {
+
+    visibility: hidden;
+
+}
+
+
+/* ==========================================================
+   SELECTED STRING
+========================================================== */
+
+.string-button.selected {
+
+    border-color:
+        #4aaee8;
+
+    background:
+        #e6f6ff;
+
+    color:
+        #2477a0;
+
+    box-shadow:
+        0 3px 9px rgba(
+            74,
+            174,
+            232,
+            0.18
+        );
+
+}
+
+
+.string-button.selected::before {
+
+    background:
+        #4aaee8;
+
+}
+
+
+/* ==========================================================
+   FOCUS
+========================================================== */
+
+.string-button:focus-visible,
+.start-button:focus-visible {
+
+    outline:
+        2px solid rgba(
+            74,
+            174,
+            232,
+            0.38
+        );
+
+    outline-offset:
+        2px;
+
+}
+
+
+/* ==========================================================
+   SMALL PHONES
+========================================================== */
+
+@media (max-width: 380px) {
+
+    .tuner-page {
+
+        padding:
+            14px 9px 32px;
+
+    }
+
+
+    .tuner-card {
+
+        padding:
+            22px 12px 20px;
+
+        border-radius: 22px;
+
+    }
+
+
+    .detected-note {
+
+        font-size: 68px;
+
+    }
+
+
+    .detected-octave {
+
+        font-size: 17px;
+
+    }
+
+
+    .detected-frequency {
+
+        font-size: 12px;
+
+    }
+
+
+    .meter-labels {
+
+        font-size: 17px;
+
+    }
+
+
+    .meter-track {
+
+        height: 7px;
+
+    }
+
+
+    .meter-indicator {
+
+        width: 22px;
+
+        height: 22px;
+
+    }
+
+
+    .tuning-status {
+
+        font-size: 22px;
+
+    }
+
+
+    .start-button {
+
+        padding:
+            12px 15px;
+
+    }
+
+
+    .mode-button {
+
+        padding:
+            10px 8px;
+
+        font-size: 13px;
+
+    }
+
+
+    .strings-grid {
+
+        gap: 4px;
+
+    }
+
+
+    .string-button {
+
+        min-height: 56px;
+
+        border-radius: 10px;
+
+    }
+
+
+    .string-note {
+
+        font-size: 19px;
+
+    }
+
+
+    .string-octave {
+
+        font-size: 9px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   VERY SMALL PHONES
+========================================================== */
+
+@media (max-width: 330px) {
+
+    .tuner-card {
+
+        padding-left: 9px;
+
+        padding-right: 9px;
+
+    }
+
+
+    .strings-grid {
+
+        gap: 3px;
+
+    }
+
+
+    .string-button {
+
+        min-height: 53px;
+
+    }
+
+
+    .string-note {
+
+        font-size: 17px;
+
+    }
+
+
+    .mode-button {
+
+        padding:
+            9px 6px;
+
+        font-size: 12px;
+
+    }
+
+}
+
+
+/* ==========================================================
+   LARGER SCREENS
+========================================================== */
+
+@media (min-width: 601px) {
+
+    .tuner-card {
+
+        padding:
+            30px 28px 25px;
+
+    }
+
+
+    .detected-note {
+
+        font-size: 88px;
+
+    }
+
+
+    .string-button {
+
+        min-height: 64px;
+
+    }
+
+}
