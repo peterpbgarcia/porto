@@ -21,7 +21,7 @@ let tunerOverlay = null;
 ========================================================= */
 
 if (pdfFile && pdfFrame) {
-    const pdfPath = "../../" + pdfFile;
+    const pdfPath = new URL(pdfFile, window.location.href).pathname;
 
     pdfFrame.src =
         "pdfjs/web/viewer.html?file=" +
