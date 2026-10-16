@@ -1,7 +1,9 @@
+
+"use strict";
+
 /* =========================================================
    SONGBOOK VIEWER
-   Supports Word-generated .htm files encoded in Windows-1252
-   Preserves original HTML formatting and chord spacing
+   HTML songs, chord transposition and tuner overlay
 ========================================================= */
 
 const params = new URLSearchParams(window.location.search);
@@ -77,9 +79,7 @@ function getNoteValue(note, accidental = "") {
 function transposeChordPart(part, steps) {
     if (!part || steps === 0) return part;
 
-    const match = part.match(
-        /^(DO|RE|MI|FA|SOL|LA|SI)(#|b)?(.*)$/i
-    );
+    const match = part.match(/^(DO|RE|MI|FA|SOL|LA|SI)(#|b)?(.*)$/i);
 
     if (!match) return part;
 
@@ -112,7 +112,9 @@ function transposeChordToken(token, steps) {
 
 async function loadSong() {
     if (!songFrame || !songFile) {
-        console.error("Song viewer: missing song file parameter or iframe.");
+        console.error(
+            "Song viewer: missing song file parameter or iframe."
+        );
         return;
     }
 
@@ -128,16 +130,10 @@ async function loadSong() {
             );
         }
 
-        // Read raw bytes instead of allowing the browser to guess
-        // the file's character encoding.
         const buffer = await response.arrayBuffer();
-
-        // Decode the original Word-exported file as Windows-1252.
         const html = new TextDecoder("windows-1252").decode(buffer);
 
-        // Load the decoded HTML into the existing iframe.
         songFrame.srcdoc = html;
-
     } catch (error) {
         console.error("Song viewer:", error);
 
@@ -175,7 +171,9 @@ songFrame?.addEventListener("load", () => {
         const doc = songFrame.contentDocument;
 
         if (!doc || !doc.body) {
-            console.error("Impossibile accedere al contenuto del canto.");
+            console.error(
+                "Impossibile accedere al contenuto del canto."
+            );
             return;
         }
 
@@ -194,7 +192,6 @@ songFrame?.addEventListener("load", () => {
             "Chord paragraphs found:",
             doc.querySelectorAll("p.TestoAccorde").length
         );
-
     } catch (error) {
         console.error("Error accessing the song:", error);
     }
@@ -209,7 +206,6 @@ function applyTransposition() {
 
     if (!doc || !doc.body || originalBodyHTML === null) return;
 
-    // Restore the untouched original content first.
     doc.body.innerHTML = originalBodyHTML;
     doc.body.style.backgroundColor = "#FFFFFF";
 
@@ -264,11 +260,61 @@ resetButton?.addEventListener("click", () => {
 });
 
 /* =========================================================
-   GUITAR TUNER
+   TUNER OVERLAY
+   Keeps the current song and transposition loaded.
 ========================================================= */
 
-tunerButton?.addEventListener("click", () => {
-    window.location.href = "guitar-tuner.html";
+let tunerOverlay = null;
+
+function openTunerOverlay() {
+    if (tunerOverlay) return;
+
+    tunerOverlay = document.createElement("div");
+
+    Object.assign(tunerOverlay.style, {
+        position: "fixed",
+        inset: "0",
+        zIndex: "99999",
+        background: "#eaf6ff"
+    });
+
+    const tunerFrame = document.createElement("iframe");
+
+    tunerFrame.src = "guitar-tuner.html?returnToSong=1";
+    tunerFrame.title = "Accordatore per chitarra";
+    tunerFrame.allow = "microphone";
+    tunerFrame.setAttribute("allow", "microphone");
+
+    Object.assign(tunerFrame.style, {
+        width: "100%",
+        height: "100%",
+        border: "0",
+        display: "block"
+    });
+
+    tunerOverlay.appendChild(tunerFrame);
+    document.body.appendChild(tunerOverlay);
+}
+
+function closeTunerOverlay() {
+    if (!tunerOverlay) return;
+
+    const frame = tunerOverlay.querySelector("iframe");
+
+    if (frame) {
+        frame.src = "about:blank";
+    }
+
+    tunerOverlay.remove();
+    tunerOverlay = null;
+}
+
+tunerButton?.addEventListener("click", openTunerOverlay);
+
+window.addEventListener("message", event => {
+    if (event.data?.type === "closeTuner") {
+        closeTunerOverlay();
+    }
 });
 
 /* =========================================================
@@ -276,12 +322,12 @@ tunerButton?.addEventListener("click", () => {
 ========================================================= */
 
 closeButton?.addEventListener("click", () => {
-    if (window.history.length > 1) {
-        window.history.back();
+    if (window.parent !== window) {
+        window.parent.history.back();
     } else {
         window.location.href = "songbook.html";
     }
 });
 
-/* Start loading the song */
+/* Start loading the song. */
 loadSong();

@@ -8,55 +8,68 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "1. Acclamate al Signore",
-                          "file":  "songbook/01 Ingresso/1. Acclamate al Signore.htm"
+                          "file":  "songbook/01 Ingresso/1. Acclamate al Signore.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "2. ALZATI E RISPLENDI (DDML-EDC)",
-                          "file":  "songbook/01 Ingresso/2. ALZATI E RISPLENDI (DDML-EDC).htm"
+                          "file":  "songbook/01 Ingresso/2. ALZATI E RISPLENDI (DDML-EDC).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "3. Ascolta Signore",
-                          "file":  "songbook/01 Ingresso/3. Ascolta Signore.htm"
+                          "file":  "songbook/01 Ingresso/3. Ascolta Signore.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "4. Canto dei tre giovani",
-                          "file":  "songbook/01 Ingresso/4. Canto dei tre giovani.htm"
+                          "file":  "songbook/01 Ingresso/4. Canto dei tre giovani.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "5. Il tuo popolo in cammino (Capo II)",
-                          "file":  "songbook/01 Ingresso/5. Il tuo popolo in cammino (Capo II).htm"
+                          "file":  "songbook/01 Ingresso/5. Il tuo popolo in cammino (Capo II).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "6. Jesus Christ you are my life",
-                          "file":  "songbook/01 Ingresso/6. Jesus Christ you are my life.htm"
+                          "file":  "songbook/01 Ingresso/6. Jesus Christ you are my life.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "7. Laudato Sii, Signore mio (Cantico della creazione)",
-                          "file":  "songbook/01 Ingresso/7. Laudato Sii, Signore mio (Cantico della creazione).htm"
+                          "file":  "songbook/01 Ingresso/7. Laudato Sii, Signore mio (Cantico della creazione).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "8. Lodate il Signore dai cieli",
-                          "file":  "songbook/01 Ingresso/8. Lodate il Signore dai cieli.htm"
+                          "file":  "songbook/01 Ingresso/8. Lodate il Signore dai cieli.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "9. Mia forza e mio canto (P. Comi EDC)",
-                          "file":  "songbook/01 Ingresso/9. Mia forza e mio canto (P. Comi EDC).htm"
+                          "file":  "songbook/01 Ingresso/9. Mia forza e mio canto (P. Comi EDC).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "10. Noi veniamo a Te",
-                          "file":  "songbook/01 Ingresso/10. Noi veniamo a Te.htm"
+                          "file":  "songbook/01 Ingresso/10. Noi veniamo a Te.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "11. Ora siamo arrivati (G. Serapiglia)",
-                          "file":  "songbook/01 Ingresso/11. Ora siamo arrivati (G. Serapiglia).htm"
+                          "file":  "songbook/01 Ingresso/11. Ora siamo arrivati (G. Serapiglia).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "12. Santa Chiesa di Dio  (Capo II)",
-                          "file":  "songbook/01 Ingresso/12. Santa Chiesa di Dio  (Capo II).htm"
+                          "file":  "songbook/01 Ingresso/12. Santa Chiesa di Dio  (Capo II).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "13. Veniamo da Te o Signore",
-                          "file":  "songbook/01 Ingresso/13. Veniamo da Te o Signore.htm"
+                          "file":  "songbook/01 Ingresso/13. Veniamo da Te o Signore.htm",
+                          "type":  "html"
                       }
                   ],
         "songbooks":  [
@@ -69,19 +82,23 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "I. Signore Pietà (F. Buttazzo)",
-                          "file":  "songbook/02 Kyrie/I. Signore Pietà (F. Buttazzo).htm"
+                          "file":  "songbook/02 Kyrie/I. Signore Pietà (F. Buttazzo).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "II. Signore Pietà (GEN)",
-                          "file":  "songbook/02 Kyrie/II. Signore Pietà (GEN).htm"
+                          "file":  "songbook/02 Kyrie/II. Signore Pietà (GEN).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "III. Kyrie Eleison",
-                          "file":  "songbook/02 Kyrie/III. Kyrie Eleison.htm"
+                          "file":  "songbook/02 Kyrie/III. Kyrie Eleison.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "IV. LORD HAVE MERCY (ACTS AND POTENCIES)",
-                          "file":  "songbook/02 Kyrie/IV. LORD HAVE MERCY (ACTS AND POTENCIES).htm"
+                          "file":  "songbook/02 Kyrie/IV. LORD HAVE MERCY (ACTS AND POTENCIES).htm",
+                          "type":  "html"
                       }
                   ],
         "songbooks":  [
@@ -94,23 +111,28 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "V. GLORIA",
-                          "file":  "songbook/03 Gloria/V. GLORIA.htm"
+                          "file":  "songbook/03 Gloria/V. GLORIA.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "VI. GLORIA (GIOMBINI)",
-                          "file":  "songbook/03 Gloria/VI. GLORIA (GIOMBINI).htm"
+                          "file":  "songbook/03 Gloria/VI. GLORIA (GIOMBINI).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "VII. GLORIA (RITIRO CANTORI 2012) (CAPO II)",
-                          "file":  "songbook/03 Gloria/VII. GLORIA (RITIRO CANTORI 2012) (CAPO II).htm"
+                          "file":  "songbook/03 Gloria/VII. GLORIA (RITIRO CANTORI 2012) (CAPO II).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "VIII. Gloria (Buttazzo)",
-                          "file":  "songbook/03 Gloria/VIII. Gloria (Buttazzo).htm"
+                          "file":  "songbook/03 Gloria/VIII. Gloria (Buttazzo).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "IX. GLORIA A DIO (G. SERAPIGLIA)",
-                          "file":  "songbook/03 Gloria/IX. GLORIA A DIO (G. SERAPIGLIA).htm"
+                          "file":  "songbook/03 Gloria/IX. GLORIA A DIO (G. SERAPIGLIA).htm",
+                          "type":  "html"
                       }
                   ],
         "songbooks":  [
@@ -123,47 +145,58 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "X. Alleluia",
-                          "file":  "songbook/04 Alleluia/X. Alleluia.htm"
+                          "file":  "songbook/04 Alleluia/X. Alleluia.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XI. Alleluia (WYD’95)",
-                          "file":  "songbook/04 Alleluia/XI. Alleluia (WYD’95).htm"
+                          "file":  "songbook/04 Alleluia/XI. Alleluia (WYD’95).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XII. Alleluia, Da chi andremo",
-                          "file":  "songbook/04 Alleluia/XII. Alleluia, Da chi andremo.htm"
+                          "file":  "songbook/04 Alleluia/XII. Alleluia, Da chi andremo.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XIII. Alleluia, Passerano i cieli (NCDP)",
-                          "file":  "songbook/04 Alleluia/XIII. Alleluia, Passerano i cieli (NCDP).htm"
+                          "file":  "songbook/04 Alleluia/XIII. Alleluia, Passerano i cieli (NCDP).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XIV. Alleluia, Cantate al Signore",
-                          "file":  "songbook/04 Alleluia/XIV. Alleluia, Cantate al Signore.htm"
+                          "file":  "songbook/04 Alleluia/XIV. Alleluia, Cantate al Signore.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XV. ALLELUIA, LA NOSTRA FESTA",
-                          "file":  "songbook/04 Alleluia/XV. ALLELUIA, LA NOSTRA FESTA.htm"
+                          "file":  "songbook/04 Alleluia/XV. ALLELUIA, LA NOSTRA FESTA.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XVI. ALLELUIA (J. NEZ MARCELO)",
-                          "file":  "songbook/04 Alleluia/XVI. ALLELUIA (J. NEZ MARCELO).htm"
+                          "file":  "songbook/04 Alleluia/XVI. ALLELUIA (J. NEZ MARCELO).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XVII. ALLELUIA, OGGI È NATO IL SALVATORE (NATALE)",
-                          "file":  "songbook/04 Alleluia/XVII. ALLELUIA, OGGI È NATO IL SALVATORE (NATALE).htm"
+                          "file":  "songbook/04 Alleluia/XVII. ALLELUIA, OGGI È NATO IL SALVATORE (NATALE).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XVIII. Canta Alleluia",
-                          "file":  "songbook/04 Alleluia/XVIII. Canta Alleluia.htm"
+                          "file":  "songbook/04 Alleluia/XVIII. Canta Alleluia.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XIX. LODE A TE O CRISTO (QUARESIMA)",
-                          "file":  "songbook/04 Alleluia/XIX. LODE A TE O CRISTO (QUARESIMA).htm"
+                          "file":  "songbook/04 Alleluia/XIX. LODE A TE O CRISTO (QUARESIMA).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XX. Lode a Te o Cristo (Quaresima)",
-                          "file":  "songbook/04 Alleluia/XX. Lode a Te o Cristo (Quaresima).htm"
+                          "file":  "songbook/04 Alleluia/XX. Lode a Te o Cristo (Quaresima).htm",
+                          "type":  "html"
                       }
                   ],
         "songbooks":  [
@@ -176,67 +209,83 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "14. Accogli i nostr doni",
-                          "file":  "songbook/05 Offertorio/14. Accogli i nostr doni.htm"
+                          "file":  "songbook/05 Offertorio/14. Accogli i nostr doni.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "15. BENEDETTO TU SIGNORE",
-                          "file":  "songbook/05 Offertorio/15. BENEDETTO TU SIGNORE.htm"
+                          "file":  "songbook/05 Offertorio/15. BENEDETTO TU SIGNORE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "16. COSA OFFRIRTI",
-                          "file":  "songbook/05 Offertorio/16. COSA OFFRIRTI.htm"
+                          "file":  "songbook/05 Offertorio/16. COSA OFFRIRTI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "17. Davanti a Te",
-                          "file":  "songbook/05 Offertorio/17. Davanti a Te.htm"
+                          "file":  "songbook/05 Offertorio/17. Davanti a Te.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "18. DONACCI TE STESSO",
-                          "file":  "songbook/05 Offertorio/18. DONACCI TE STESSO.htm"
+                          "file":  "songbook/05 Offertorio/18. DONACCI TE STESSO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "19. Ecco quel che abbiamo",
-                          "file":  "songbook/05 Offertorio/19. Ecco quel che abbiamo.htm"
+                          "file":  "songbook/05 Offertorio/19. Ecco quel che abbiamo.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "20. FRUTTO DELLA NOSTRA TERRA",
-                          "file":  "songbook/05 Offertorio/20. FRUTTO DELLA NOSTRA TERRA.htm"
+                          "file":  "songbook/05 Offertorio/20. FRUTTO DELLA NOSTRA TERRA.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "21. IL SACRIFICIO DELLA LODE",
-                          "file":  "songbook/05 Offertorio/21. IL SACRIFICIO DELLA LODE.htm"
+                          "file":  "songbook/05 Offertorio/21. IL SACRIFICIO DELLA LODE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "22. IO TI OFFRO",
-                          "file":  "songbook/05 Offertorio/22. IO TI OFFRO.htm"
+                          "file":  "songbook/05 Offertorio/22. IO TI OFFRO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "23. NOI CON TE",
-                          "file":  "songbook/05 Offertorio/23. NOI CON TE.htm"
+                          "file":  "songbook/05 Offertorio/23. NOI CON TE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "24. PANE DI VITA SEI",
-                          "file":  "songbook/05 Offertorio/24. PANE DI VITA SEI.htm"
+                          "file":  "songbook/05 Offertorio/24. PANE DI VITA SEI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "25. PANE E VINO DI OFFRIAMO",
-                          "file":  "songbook/05 Offertorio/25. PANE E VINO DI OFFRIAMO.htm"
+                          "file":  "songbook/05 Offertorio/25. PANE E VINO DI OFFRIAMO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "26. PER QUESTI DONI",
-                          "file":  "songbook/05 Offertorio/26. PER QUESTI DONI.htm"
+                          "file":  "songbook/05 Offertorio/26. PER QUESTI DONI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "27. SE M’ACCOGLI",
-                          "file":  "songbook/05 Offertorio/27. SE M’ACCOGLI.htm"
+                          "file":  "songbook/05 Offertorio/27. SE M’ACCOGLI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "28. Segni del Tuo amore (GEN VERDE, GEN ROSSO)",
-                          "file":  "songbook/05 Offertorio/28. Segni del Tuo amore (GEN VERDE, GEN ROSSO).htm"
+                          "file":  "songbook/05 Offertorio/28. Segni del Tuo amore (GEN VERDE, GEN ROSSO).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "29. Su quest’altare",
-                          "file":  "songbook/05 Offertorio/29. Su quest’altare.htm"
+                          "file":  "songbook/05 Offertorio/29. Su quest’altare.htm",
+                          "type":  "html"
                       }
                   ],
         "songbooks":  [
@@ -249,43 +298,53 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "XVIII. Santo (Frisina)",
-                          "file":  "songbook/06 Santo/XVIII. Santo (Frisina).htm"
+                          "file":  "songbook/06 Santo/XVIII. Santo (Frisina).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXI. Santo",
-                          "file":  "songbook/06 Santo/XXI. Santo.htm"
+                          "file":  "songbook/06 Santo/XXI. Santo.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXII. Santo (GEN)",
-                          "file":  "songbook/06 Santo/XXII. Santo (GEN).htm"
+                          "file":  "songbook/06 Santo/XXII. Santo (GEN).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXIII. SANTO",
-                          "file":  "songbook/06 Santo/XXIII. SANTO.htm"
+                          "file":  "songbook/06 Santo/XXIII. SANTO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXIV. SANTO (COME FUOCO VIVO)",
-                          "file":  "songbook/06 Santo/XXIV. SANTO (COME FUOCO VIVO).htm"
+                          "file":  "songbook/06 Santo/XXIV. SANTO (COME FUOCO VIVO).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXV. SANTO (G. SERAPIGLIA)",
-                          "file":  "songbook/06 Santo/XXV. SANTO (G. SERAPIGLIA).htm"
+                          "file":  "songbook/06 Santo/XXV. SANTO (G. SERAPIGLIA).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXVI. SANTO (GEN VERDE)",
-                          "file":  "songbook/06 Santo/XXVI. SANTO (GEN VERDE).htm"
+                          "file":  "songbook/06 Santo/XXVI. SANTO (GEN VERDE).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXVII. SANTO (LADISPOLI)",
-                          "file":  "songbook/06 Santo/XXVII. SANTO (LADISPOLI).htm"
+                          "file":  "songbook/06 Santo/XXVII. SANTO (LADISPOLI).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXIX. SANTO (F. BUTAZZO)",
-                          "file":  "songbook/06 Santo/XXIX. SANTO (F. BUTAZZO).htm"
+                          "file":  "songbook/06 Santo/XXIX. SANTO (F. BUTAZZO).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXX. Acclamazione",
-                          "file":  "songbook/06 Santo/XXX. Acclamazione.htm"
+                          "file":  "songbook/06 Santo/XXX. Acclamazione.htm",
+                          "type":  "html"
                       }
                   ],
         "songbooks":  [
@@ -298,23 +357,28 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "XXXI. AGNUS DEI",
-                          "file":  "songbook/07 Agnus Dei/XXXI. AGNUS DEI.htm"
+                          "file":  "songbook/07 Agnus Dei/XXXI. AGNUS DEI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXXII. AGNELLO DI DIO",
-                          "file":  "songbook/07 Agnus Dei/XXXII. AGNELLO DI DIO.htm"
+                          "file":  "songbook/07 Agnus Dei/XXXII. AGNELLO DI DIO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXXIII. AGNELLO DI DIO (FRISINA)",
-                          "file":  "songbook/07 Agnus Dei/XXXIII. AGNELLO DI DIO (FRISINA).htm"
+                          "file":  "songbook/07 Agnus Dei/XXXIII. AGNELLO DI DIO (FRISINA).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXXIV. Agnello di Dio ",
-                          "file":  "songbook/07 Agnus Dei/XXXIV. Agnello di Dio .htm"
+                          "file":  "songbook/07 Agnus Dei/XXXIV. Agnello di Dio .htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "XXXV. AGNELLO DI DIO (RNS)",
-                          "file":  "songbook/07 Agnus Dei/XXXV. AGNELLO DI DIO (RNS).htm"
+                          "file":  "songbook/07 Agnus Dei/XXXV. AGNELLO DI DIO (RNS).htm",
+                          "type":  "html"
                       }
                   ],
         "songbooks":  [
@@ -327,143 +391,178 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "30. ACCOGLIMI (EDC)",
-                          "file":  "songbook/08 Comunione/30. ACCOGLIMI (EDC).htm"
+                          "file":  "songbook/08 Comunione/30. ACCOGLIMI (EDC).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "31. AL SIGNORE CANTERÒ",
-                          "file":  "songbook/08 Comunione/31. AL SIGNORE CANTERÒ.htm"
+                          "file":  "songbook/08 Comunione/31. AL SIGNORE CANTERÒ.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "32. CERCO LA TUA VOCE",
-                          "file":  "songbook/08 Comunione/32. CERCO LA TUA VOCE.htm"
+                          "file":  "songbook/08 Comunione/32. CERCO LA TUA VOCE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "33. CHI CI SEPARERÀ (RNS)",
-                          "file":  "songbook/08 Comunione/33. CHI CI SEPARERÀ (RNS).htm"
+                          "file":  "songbook/08 Comunione/33. CHI CI SEPARERÀ (RNS).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "34. COME FUOCO VIVO (GEN VERDE, GEN ROSSO)",
-                          "file":  "songbook/08 Comunione/34. COME FUOCO VIVO (GEN VERDE, GEN ROSSO).htm"
+                          "file":  "songbook/08 Comunione/34. COME FUOCO VIVO (GEN VERDE, GEN ROSSO).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "35. CON AMORE INFINITO",
-                          "file":  "songbook/08 Comunione/35. CON AMORE INFINITO.htm"
+                          "file":  "songbook/08 Comunione/35. CON AMORE INFINITO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "36. DACCI IL TUO PANE",
-                          "file":  "songbook/08 Comunione/36. DACCI IL TUO PANE.htm"
+                          "file":  "songbook/08 Comunione/36. DACCI IL TUO PANE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "37. DALL’AURORA AL TRAMONTO",
-                          "file":  "songbook/08 Comunione/37. DALL’AURORA AL TRAMONTO.htm"
+                          "file":  "songbook/08 Comunione/37. DALL’AURORA AL TRAMONTO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "38. DOV’È CARITÀ E AMORE",
-                          "file":  "songbook/08 Comunione/38. DOV’È CARITÀ E AMORE.htm"
+                          "file":  "songbook/08 Comunione/38. DOV’È CARITÀ E AMORE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "39. DOVE DUE O TRE",
-                          "file":  "songbook/08 Comunione/39. DOVE DUE O TRE.htm"
+                          "file":  "songbook/08 Comunione/39. DOVE DUE O TRE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "40. E SONO SOLO UN UOMO (EDC)",
-                          "file":  "songbook/08 Comunione/40. E SONO SOLO UN UOMO (EDC).htm"
+                          "file":  "songbook/08 Comunione/40. E SONO SOLO UN UOMO (EDC).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "41. ECCOMI, SIGNORE",
-                          "file":  "songbook/08 Comunione/41. ECCOMI, SIGNORE.htm"
+                          "file":  "songbook/08 Comunione/41. ECCOMI, SIGNORE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "42. FRATELLO SOLE, SORELLA LUNA",
-                          "file":  "songbook/08 Comunione/42. FRATELLO SOLE, SORELLA LUNA.htm"
+                          "file":  "songbook/08 Comunione/42. FRATELLO SOLE, SORELLA LUNA.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "43. L’UNICO MAESTRO.",
-                          "file":  "songbook/08 Comunione/43. L’UNICO MAESTRO..htm"
+                          "file":  "songbook/08 Comunione/43. L’UNICO MAESTRO..htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "44. LA VERA VITE",
-                          "file":  "songbook/08 Comunione/44. LA VERA VITE.htm"
+                          "file":  "songbook/08 Comunione/44. LA VERA VITE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "45. MI BASTA IL TUO AMORE GESÙ",
-                          "file":  "songbook/08 Comunione/45. MI BASTA IL TUO AMORE GESÙ.htm"
+                          "file":  "songbook/08 Comunione/45. MI BASTA IL TUO AMORE GESÙ.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "46. NELLE TUE MANI",
-                          "file":  "songbook/08 Comunione/46. NELLE TUE MANI.htm"
+                          "file":  "songbook/08 Comunione/46. NELLE TUE MANI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "47. OGNI MIA PAROLA",
-                          "file":  "songbook/08 Comunione/47. OGNI MIA PAROLA.htm"
+                          "file":  "songbook/08 Comunione/47. OGNI MIA PAROLA.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "48. ORA CHE SEI IN MEZZO A NOI (G. SERAPIGLIA)",
-                          "file":  "songbook/08 Comunione/48. ORA CHE SEI IN MEZZO A NOI (G. SERAPIGLIA).htm"
+                          "file":  "songbook/08 Comunione/48. ORA CHE SEI IN MEZZO A NOI (G. SERAPIGLIA).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "49. PANE DEL CIELO",
-                          "file":  "songbook/08 Comunione/49. PANE DEL CIELO.htm"
+                          "file":  "songbook/08 Comunione/49. PANE DEL CIELO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "50. PANE DI VITA NUOVA",
-                          "file":  "songbook/08 Comunione/50. PANE DI VITA NUOVA.htm"
+                          "file":  "songbook/08 Comunione/50. PANE DI VITA NUOVA.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "51. POPOLI TUTTI",
-                          "file":  "songbook/08 Comunione/51. POPOLI TUTTI.htm"
+                          "file":  "songbook/08 Comunione/51. POPOLI TUTTI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "52. QUANDO GUARDO ALLA TUA SANTITÀ",
-                          "file":  "songbook/08 Comunione/52. QUANDO GUARDO ALLA TUA SANTITÀ.htm"
+                          "file":  "songbook/08 Comunione/52. QUANDO GUARDO ALLA TUA SANTITÀ.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "53. RESTA ANCORA MIO SIGNORE",
-                          "file":  "songbook/08 Comunione/53. RESTA ANCORA MIO SIGNORE.htm"
+                          "file":  "songbook/08 Comunione/53. RESTA ANCORA MIO SIGNORE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "54. RESTA QUI CON NOI",
-                          "file":  "songbook/08 Comunione/54. RESTA QUI CON NOI.htm"
+                          "file":  "songbook/08 Comunione/54. RESTA QUI CON NOI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "55. SEI PER NOI CIBO DI ETERNITÀ",
-                          "file":  "songbook/08 Comunione/55. SEI PER NOI CIBO DI ETERNITÀ.htm"
+                          "file":  "songbook/08 Comunione/55. SEI PER NOI CIBO DI ETERNITÀ.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "56. SOLO TU O SIGNORE",
-                          "file":  "songbook/08 Comunione/56. SOLO TU O SIGNORE.htm"
+                          "file":  "songbook/08 Comunione/56. SOLO TU O SIGNORE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "57. TE AL CENTRO DEL MIO CUORE",
-                          "file":  "songbook/08 Comunione/57. TE AL CENTRO DEL MIO CUORE.htm"
+                          "file":  "songbook/08 Comunione/57. TE AL CENTRO DEL MIO CUORE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "58. TU SEI",
-                          "file":  "songbook/08 Comunione/58. TU SEI.htm"
+                          "file":  "songbook/08 Comunione/58. TU SEI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "59. U SEI LA MIA VITA (SYMBOLUM 77)",
-                          "file":  "songbook/08 Comunione/59. U SEI LA MIA VITA (SYMBOLUM 77).htm"
+                          "file":  "songbook/08 Comunione/59. U SEI LA MIA VITA (SYMBOLUM 77).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "60. TU SEI LA PERLA PREZIOSA",
-                          "file":  "songbook/08 Comunione/60. TU SEI LA PERLA PREZIOSA.htm"
+                          "file":  "songbook/08 Comunione/60. TU SEI LA PERLA PREZIOSA.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "61. VERBUM PANIS",
-                          "file":  "songbook/08 Comunione/61. VERBUM PANIS.htm"
+                          "file":  "songbook/08 Comunione/61. VERBUM PANIS.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "62. VIENI E SEGUIMI",
-                          "file":  "songbook/08 Comunione/62. VIENI E SEGUIMI.htm"
+                          "file":  "songbook/08 Comunione/62. VIENI E SEGUIMI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "63. VIVERE CON TE",
-                          "file":  "songbook/08 Comunione/63. VIVERE CON TE.htm"
+                          "file":  "songbook/08 Comunione/63. VIVERE CON TE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "64. VOI SIETE DI DIO",
-                          "file":  "songbook/08 Comunione/64. VOI SIETE DI DIO.htm"
+                          "file":  "songbook/08 Comunione/64. VOI SIETE DI DIO.htm",
+                          "type":  "html"
                       }
                   ],
         "songbooks":  [
@@ -476,75 +575,117 @@ const songCategories = [
         "songs":  [
                       {
                           "title":  "65. ALLEANZA DI PACE",
-                          "file":  "songbook/09 Finale/65. ALLEANZA DI PACE.htm"
+                          "file":  "songbook/09 Finale/65. ALLEANZA DI PACE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "66. ALLEANZA DI PACE",
-                          "file":  "songbook/09 Finale/66. ALLEANZA DI PACE.htm"
+                          "file":  "songbook/09 Finale/66. ALLEANZA DI PACE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "67. ALLEANZA DI PACE",
-                          "file":  "songbook/09 Finale/67. ALLEANZA DI PACE.htm"
+                          "file":  "songbook/09 Finale/67. ALLEANZA DI PACE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "68. ANDATE PER LE STRADE (EDC)",
-                          "file":  "songbook/09 Finale/68. ANDATE PER LE STRADE (EDC).htm"
+                          "file":  "songbook/09 Finale/68. ANDATE PER LE STRADE (EDC).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "69. CANZONE DELL’AMICIZIA (G. FONTANA)",
-                          "file":  "songbook/09 Finale/69. CANZONE DELL’AMICIZIA (G. FONTANA).htm"
+                          "file":  "songbook/09 Finale/69. CANZONE DELL’AMICIZIA (G. FONTANA).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "70. E’ BELLO LODARTI",
-                          "file":  "songbook/09 Finale/70. E’ BELLO LODARTI.htm"
+                          "file":  "songbook/09 Finale/70. E’ BELLO LODARTI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "71. EMMANUEL",
-                          "file":  "songbook/09 Finale/71. EMMANUEL.htm"
+                          "file":  "songbook/09 Finale/71. EMMANUEL.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "72. GETTA LE TUE RETI",
-                          "file":  "songbook/09 Finale/72. GETTA LE TUE RETI.htm"
+                          "file":  "songbook/09 Finale/72. GETTA LE TUE RETI.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "73. IN ETERNO CANTERÒ",
-                          "file":  "songbook/09 Finale/73. IN ETERNO CANTERÒ.htm"
+                          "file":  "songbook/09 Finale/73. IN ETERNO CANTERÒ.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "74. LA TUA DIMORA",
-                          "file":  "songbook/09 Finale/74. LA TUA DIMORA.htm"
+                          "file":  "songbook/09 Finale/74. LA TUA DIMORA.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "75. LE TUE MERAVIGLIE",
-                          "file":  "songbook/09 Finale/75. LE TUE MERAVIGLIE.htm"
+                          "file":  "songbook/09 Finale/75. LE TUE MERAVIGLIE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "76. LODE AL NOME TUO",
-                          "file":  "songbook/09 Finale/76. LODE AL NOME TUO.htm"
+                          "file":  "songbook/09 Finale/76. LODE AL NOME TUO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "77. MI DICHIARO PER CRISTO",
-                          "file":  "songbook/09 Finale/77. MI DICHIARO PER CRISTO.htm"
+                          "file":  "songbook/09 Finale/77. MI DICHIARO PER CRISTO.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "78. PACE SIA, PACE A VOI (GEN VERDE-ROSSO)",
-                          "file":  "songbook/09 Finale/78. PACE SIA, PACE A VOI (GEN VERDE-ROSSO).htm"
+                          "file":  "songbook/09 Finale/78. PACE SIA, PACE A VOI (GEN VERDE-ROSSO).htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "79. RE DEI RE",
-                          "file":  "songbook/09 Finale/79. RE DEI RE.htm"
+                          "file":  "songbook/09 Finale/79. RE DEI RE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "80. SERVO PER AMORE",
-                          "file":  "songbook/09 Finale/80. SERVO PER AMORE.htm"
+                          "file":  "songbook/09 Finale/80. SERVO PER AMORE.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "81. SPLENDI GESÙ",
-                          "file":  "songbook/09 Finale/81. SPLENDI GESÙ.htm"
+                          "file":  "songbook/09 Finale/81. SPLENDI GESÙ.htm",
+                          "type":  "html"
                       },
                       {
                           "title":  "82. VI AMO COSÌ",
-                          "file":  "songbook/09 Finale/82. VI AMO COSÌ.htm"
+                          "file":  "songbook/09 Finale/82. VI AMO COSÌ.htm",
+                          "type":  "html"
+                      }
+                  ],
+        "songbooks":  [
+
+                      ]
+    },
+    {
+        "id":  "category-10 Songbook Collection",
+        "name":  "Songbook Collection",
+        "songs":  [
+                      {
+                          "title":  "Bayan Umawit Filipino Songs",
+                          "file":  "songbook/10 Songbook Collection/Bayan Umawit Filipino Songs.pdf",
+                          "type":  "pdf"
+                      },
+                      {
+                          "title":  "Italian Songbook",
+                          "file":  "songbook/10 Songbook Collection/Italian Songbook.pdf",
+                          "type":  "pdf"
+                      },
+                      {
+                          "title":  "Music Hub Porto 2026",
+                          "file":  "songbook/10 Songbook Collection/Music Hub Porto 2026.pdf",
+                          "type":  "pdf"
                       }
                   ],
         "songbooks":  [

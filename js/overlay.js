@@ -1,3 +1,4 @@
+
 /* ==========================================================
    FULL-SCREEN OVERLAY
    COMPENDIUM 9.0
@@ -18,9 +19,19 @@ let overlayOpen = false;
 const pageOverlay =
     document.getElementById("pageOverlay");
 
-
 const pageOverlayClose =
     document.getElementById("pageOverlayClose");
+
+
+/* ==========================================================
+   CHECK WHETHER A SONGBOOK VIEWER IS OPEN
+========================================================== */
+
+function isSongbookViewer(url) {
+
+    return /(?:^|\/)(?:songbook-viewer|pdf-songbook-viewer)\.html(?:[?#]|$)/i
+        .test(String(url || ""));
+}
 
 
 /* ==========================================================
@@ -33,20 +44,29 @@ function openPageOverlay(url) {
         return;
     }
 
-
     /* ------------------------------------------
        Remove old iframe completely
     ------------------------------------------ */
 
     const oldFrame =
-        document.getElementById(
-            "pageOverlayFrame"
-        );
-
+        document.getElementById("pageOverlayFrame");
 
     if (oldFrame) {
-
         oldFrame.remove();
+    }
+
+
+    /* ------------------------------------------
+       Show or hide the outer X
+
+       Songbook viewers have their own X.
+       Other overlay pages keep the outer X.
+    ------------------------------------------ */
+
+    if (pageOverlayClose) {
+
+        pageOverlayClose.style.display =
+            isSongbookViewer(url) ? "none" : "";
 
     }
 
@@ -58,66 +78,36 @@ function openPageOverlay(url) {
     const frame =
         document.createElement("iframe");
 
+    frame.id = "pageOverlayFrame";
+    frame.className = "page-overlay-frame";
+    frame.title = "Contenuto";
 
-    frame.id =
-        "pageOverlayFrame";
+    frame.setAttribute("allow", "microphone");
+    frame.setAttribute("allowfullscreen", "");
+
+    frame.src = url;
+
+    pageOverlay.appendChild(frame);
 
 
-    frame.className =
-        "page-overlay-frame";
+    /* ------------------------------------------
+       Add browser history state
+    ------------------------------------------ */
 
-
-    frame.title =
-        "Contenuto";
-
-
-    frame.setAttribute(
-        "allow",
-        "microphone"
+    history.pushState(
+        { pageOverlay: true },
+        "",
+        window.location.href
     );
 
 
-    frame.setAttribute(
-        "allowfullscreen",
-        ""
-    );
-
-
-    frame.src =
-        url;
-
-
-    pageOverlay.appendChild(
-        frame
-    );
-
-
-/* ------------------------------------------
-   Add browser history state
------------------------------------------- */
-
-history.pushState(
-    {
-        pageOverlay: true
-    },
-    "",
-    window.location.href
-);
-	
     /* ------------------------------------------
        Show overlay
     ------------------------------------------ */
 
-    pageOverlay.classList.add(
-        "active"
-    );
+    pageOverlay.classList.add("active");
 
-
-    pageOverlay.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
+    pageOverlay.setAttribute("aria-hidden", "false");
 
     overlayOpen = true;
 
@@ -126,19 +116,18 @@ history.pushState(
        Lock background
     ------------------------------------------ */
 
-    document.body.classList.add(
-        "overlay-open"
-    );
+    document.body.classList.add("overlay-open");
 
 
     /* ------------------------------------------
-       Focus X
+       Focus outer X only when visible
     ------------------------------------------ */
 
-    if (pageOverlayClose) {
-
+    if (
+        pageOverlayClose &&
+        pageOverlayClose.style.display !== "none"
+    ) {
         pageOverlayClose.focus();
-
     }
 
 }
@@ -159,15 +148,9 @@ function closePageOverlay() {
        Hide overlay
     ------------------------------------------ */
 
-    pageOverlay.classList.remove(
-        "active"
-    );
+    pageOverlay.classList.remove("active");
 
-
-    pageOverlay.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+    pageOverlay.setAttribute("aria-hidden", "true");
 
 
     /* ------------------------------------------
@@ -175,15 +158,19 @@ function closePageOverlay() {
     ------------------------------------------ */
 
     const frame =
-        document.getElementById(
-            "pageOverlayFrame"
-        );
-
+        document.getElementById("pageOverlayFrame");
 
     if (frame) {
-
         frame.remove();
+    }
 
+
+    /* ------------------------------------------
+       Restore outer X for future overlays
+    ------------------------------------------ */
+
+    if (pageOverlayClose) {
+        pageOverlayClose.style.display = "";
     }
 
 
@@ -198,9 +185,7 @@ function closePageOverlay() {
        Restore background
     ------------------------------------------ */
 
-    document.body.classList.remove(
-        "overlay-open"
-    );
+    document.body.classList.remove("overlay-open");
 
 }
 
@@ -209,19 +194,13 @@ function closePageOverlay() {
    BROWSER / GESTURE BACK
 ========================================================== */
 
-window.addEventListener(
-    "popstate",
-    () => {
+window.addEventListener("popstate", () => {
 
-        if (overlayOpen) {
-
-            closePageOverlay();
-
-        }
-
+    if (overlayOpen) {
+        closePageOverlay();
     }
-);
 
+});
 
 
 /* ==========================================================
@@ -230,18 +209,13 @@ window.addEventListener(
 
 if (pageOverlayClose) {
 
-    pageOverlayClose.addEventListener(
-        "click",
-        () => {
+    pageOverlayClose.addEventListener("click", () => {
 
-            if (overlayOpen) {
-
-                history.back();
-
-            }
-
+        if (overlayOpen) {
+            history.back();
         }
-    );
+
+    });
 
 }
 
@@ -251,25 +225,17 @@ if (pageOverlayClose) {
 ========================================================== */
 
 const guitarLink =
-    document.querySelector(
-        ".guitar-link"
-    );
-
+    document.querySelector(".guitar-link");
 
 if (guitarLink) {
 
-    guitarLink.addEventListener(
-        "click",
-        (event) => {
+    guitarLink.addEventListener("click", event => {
 
-            event.preventDefault();
+        event.preventDefault();
 
-            openPageOverlay(
-                guitarLink.href
-            );
+        openPageOverlay(guitarLink.href);
 
-        }
-    );
+    });
 
 }
 
@@ -279,26 +245,17 @@ if (guitarLink) {
 ========================================================== */
 
 const footerLinks =
-    document.querySelectorAll(
-        ".songbook-footer a"
-    );
-
+    document.querySelectorAll(".songbook-footer a");
 
 footerLinks.forEach(link => {
 
-    link.addEventListener(
-        "click",
-        (event) => {
+    link.addEventListener("click", event => {
 
-            event.preventDefault();
+        event.preventDefault();
 
+        openPageOverlay(link.href);
 
-            openPageOverlay(
-                link.href
-            );
-
-        }
-    );
+    });
 
 });
 
@@ -315,45 +272,22 @@ if (
     const App =
         window.Capacitor.Plugins?.App;
 
-
     if (App) {
 
-        App.addListener(
-            "backButton",
-            () => {
+        App.addListener("backButton", () => {
 
+            /* Overlay open: close it. */
 
-                /* ----------------------------------
-                   OVERLAY OPEN
-                   
-                   Just close it.
-                ---------------------------------- */
-
-                if (overlayOpen) {
-
-    history.back();
-
-    return;
-
-}
-
-
-                /* ----------------------------------
-                   SONGBOOK
-                   
-                   DIRECTLY GO TO INDEX.
-                   
-                   NO HISTORY.
-                   NO history.back().
-                   NO history.go().
-                ---------------------------------- */
-
-                window.location.replace(
-                    "index.html"
-                );
-
+            if (overlayOpen) {
+                history.back();
+                return;
             }
-        );
+
+            /* Otherwise, return to index. */
+
+            window.location.replace("index.html");
+
+        });
 
     }
 

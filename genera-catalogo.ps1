@@ -74,11 +74,7 @@ try {
     }
 
     # ==========================================
-    # REMOVE NUMBER FROM DISPLAY NAME
-    # Examples:
-    # "01 Ingresso" -> "Ingresso"
-    # "02-Kyrie"    -> "Kyrie"
-    # "03_Gloria"   -> "Gloria"
+    # REMOVE NUMBER FROM CATEGORY DISPLAY NAME
     # ==========================================
 
     function Get-DisplayName([string]$name) {
@@ -104,31 +100,40 @@ try {
     Write-Host "Cartelle trovate: $($folders.Count)"
 
     $categories = @()
+    $totalHtml = 0
+    $totalPdf = 0
 
     # ==========================================
-    # READ SONG FILES
+    # READ HTML AND PDF FILES
     # ==========================================
 
     foreach ($entry in $folders) {
-        Write-Host "Controllo: $($entry.Folder.Name)"
+        Write-Host ""
+        Write-Host "Controllo categoria: $($entry.Folder.Name)"
 
         $files = @(
             Get-ChildItem -Path $entry.Folder.FullName -File |
             Where-Object {
-                $_.Extension -in @(".htm", ".html")
+                $_.Extension -in @(".htm", ".html", ".pdf")
             } |
             ForEach-Object {
                 [PSCustomObject]@{
                     File   = $_
                     Number = Get-InitialNumber $_.BaseName
                     Name   = $_.BaseName
+                    Type   = if ($_.Extension -ieq ".pdf") {
+                        "pdf"
+                    }
+                    else {
+                        "html"
+                    }
                 }
             } |
-            Sort-Object Number, Name
+            Sort-Object Number, Name, Type
         )
 
         if ($files.Count -eq 0) {
-            Write-Host "  Nessun file HTML trovato."
+            Write-Host "  Nessun file HTML o PDF trovato."
             continue
         }
 
@@ -138,9 +143,17 @@ try {
                     $entry.Folder.Name + "/" +
                     $item.File.Name
 
+                if ($item.Type -eq "pdf") {
+                    $totalPdf++
+                }
+                else {
+                    $totalHtml++
+                }
+
                 [PSCustomObject]@{
                     title = $item.File.BaseName
                     file  = $relativePath
+                    type  = $item.Type
                 }
             }
         )
@@ -152,7 +165,9 @@ try {
             songbooks = @()
         }
 
-        Write-Host "  Canti trovati: $($files.Count)"
+        Write-Host "  File trovati: $($files.Count)"
+        Write-Host "  HTML: $(($files | Where-Object { $_.Type -eq 'html' }).Count)"
+        Write-Host "  PDF:  $(($files | Where-Object { $_.Type -eq 'pdf' }).Count)"
     }
 
     # ==========================================
@@ -176,7 +191,10 @@ const songCategories = $json;
         $encoding
     )
 
-    # Verify that the file really exists.
+    # ==========================================
+    # VERIFY OUTPUT
+    # ==========================================
+
     if (-not (Test-Path $outputPath -PathType Leaf)) {
         throw "Il file generato non esiste: $outputPath"
     }
@@ -187,6 +205,8 @@ const songCategories = $json;
     Write-Host "========================================"
     Write-Host "CATALOGO AGGIORNATO CORRETTAMENTE!" -ForegroundColor Green
     Write-Host "Categorie create: $($categories.Count)"
+    Write-Host "Canti HTML: $totalHtml"
+    Write-Host "File PDF:   $totalPdf"
     Write-Host "File generato: $($generatedFile.FullName)"
     Write-Host "Dimensione: $($generatedFile.Length) byte"
     Write-Host "========================================"

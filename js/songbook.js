@@ -1,3 +1,4 @@
+
 /* ==================================================
    CANTI — CATALOGUE SCRIPT
 ================================================== */
@@ -20,22 +21,31 @@
         return;
     }
 
-    if (typeof songCategories === "undefined" ||
-    !Array.isArray(songCategories)) {
-    console.error(
-        "Canti: songCategories non è stato trovato in js/songs.js."
-    );
-    categoriesContainer.textContent =
-        "Impossibile caricare l'elenco dei canti.";
-    return;
+    if (
+        typeof songCategories === "undefined" ||
+        !Array.isArray(songCategories)
+    ) {
+        console.error(
+            "Canti: songCategories non è stato trovato in js/songs-generated.js."
+        );
+
+        categoriesContainer.textContent =
+            "Impossibile caricare l'elenco dei canti.";
+
+        return;
     }
 
     let expandedCategory = null;
 
+    // Existing manually configured PDF songbooks.
     const PDF_SONGBOOKS = {
         "Bayan Umawit Songbook": "pdf/bayanumawit.pdf",
         "Italian Music Sheets": "pdf/musichub2026.pdf"
     };
+
+    /* ==================================================
+       CREATE ELEMENT
+    ================================================== */
 
     function createElement(tag, className, text) {
         const element = document.createElement(tag);
@@ -51,6 +61,10 @@
         return element;
     }
 
+    /* ==================================================
+       NORMALIZE SEARCH TEXT
+    ================================================== */
+
     function normalize(value) {
         return String(value ?? "")
             .normalize("NFD")
@@ -58,6 +72,10 @@
             .toLocaleLowerCase("it")
             .trim();
     }
+
+    /* ==================================================
+       CATEGORY DATA
+    ================================================== */
 
     function getSongs(category) {
         return Array.isArray(category.songs)
@@ -71,6 +89,10 @@
             : [];
     }
 
+    /* ==================================================
+       SONG NUMBER
+    ================================================== */
+
     function getSongNumber(title) {
         const match = String(title ?? "").match(
             /^\s*([IVXLCDM]+|\d+)\s*[.)-]?/i
@@ -78,6 +100,33 @@
 
         return match ? match[1] : "";
     }
+
+    /* ==================================================
+       DETECT PDF FILES
+    ================================================== */
+
+    function isPdf(song) {
+        if (String(song.type ?? "").toLowerCase() === "pdf") {
+            return true;
+        }
+
+        return /\.pdf$/i.test(String(song.file ?? ""));
+    }
+
+    /* ==================================================
+       BUILD PDF VIEWER LINK
+    ================================================== */
+
+    function getPdfViewerUrl(pdfPath) {
+        return (
+            "pdf-songbook-viewer.html?file=" +
+            encodeURIComponent(pdfPath)
+        );
+    }
+
+    /* ==================================================
+       SEARCH SONGS
+    ================================================== */
 
     function matchesSong(song, query) {
         if (!query) {
@@ -90,49 +139,69 @@
         return title.includes(query) || number.includes(query);
     }
 
-    
-function createSongLink(song) {
-    const item = createElement("li", "song-item");
-    const link = createElement("a", "song-link", song.title);
+    /* ==================================================
+       CREATE SONG LINK
+    ================================================== */
 
-    link.href =
-        "songbook-viewer.html?file=" +
-        encodeURIComponent(song.file);
-
-    item.appendChild(link);
-
-    return item;
-}
-
-
-    function createSongbookLink(songbook) {
+    function createSongLink(song) {
         const item = createElement("li", "song-item");
-        const link = createElement(
-            "a",
-            "songbook-pdf-link",
-            songbook.name
-        );
+        const link = createElement("a", "song-link", song.title);
 
-        /*
-         * Preserve the existing PDF.js viewer.
-         * Use the configured PDF path when available.
-         */
-        const pdfPath =
-            songbook.file ||
-            PDF_SONGBOOKS[songbook.name];
-
-        if (pdfPath) {
+        if (isPdf(song)) {
+            // PDFs use the new custom PDF viewer.
+            link.href = getPdfViewerUrl(song.file);
+        } else {
+            // HTML songs keep using the existing song viewer.
             link.href =
-                "pdfjs/web/viewer.html?file=" +
-                encodeURIComponent("../../" + pdfPath);
-
-            link.target = "_self";
+                "songbook-viewer.html?file=" +
+                encodeURIComponent(song.file);
         }
 
         item.appendChild(link);
 
         return item;
     }
+
+    /* ==================================================
+       CREATE MANUALLY CONFIGURED PDF SONGBOOK LINK
+    ================================================== */
+
+    function createSongbookLink(songbook) {
+        const item = createElement("li", "song-item");
+
+        const link = createElement(
+            "a",
+            "songbook-pdf-link",
+            songbook.name
+        );
+
+        const pdfPath =
+            songbook.file ||
+            PDF_SONGBOOKS[songbook.name];
+
+        if (pdfPath) {
+            link.href = getPdfViewerUrl(pdfPath);
+        } else {
+            link.href = "#";
+
+            console.warn(
+                "Canti: percorso PDF non trovato per:",
+                songbook.name
+            );
+
+            link.addEventListener("click", event => {
+                event.preventDefault();
+            });
+        }
+
+        item.appendChild(link);
+
+        return item;
+    }
+
+    /* ==================================================
+       CREATE CATEGORY
+    ================================================== */
 
     function createCategory(category, query) {
         const songs = getSongs(category);
@@ -156,7 +225,10 @@ function createSongLink(song) {
             return null;
         }
 
-        const section = createElement("section", "song-category");
+        const section = createElement(
+            "section",
+            "song-category"
+        );
 
         const categoryId = String(
             category.id || category.name
@@ -168,10 +240,6 @@ function createSongLink(song) {
         );
 
         button.type = "button";
-        button.setAttribute(
-            "aria-expanded",
-            String(!query && expandedCategory === categoryId)
-        );
 
         const heading = createElement(
             "span",
@@ -182,7 +250,10 @@ function createSongLink(song) {
         const count = createElement(
             "span",
             "song-category-count",
-            String(matchingSongs.length + matchingSongbooks.length)
+            String(
+                matchingSongs.length +
+                matchingSongbooks.length
+            )
         );
 
         const chevron = createElement(
@@ -210,20 +281,18 @@ function createSongLink(song) {
             list.appendChild(createSongbookLink(songbook));
         });
 
-        
-content.appendChild(list);
+        content.appendChild(list);
 
-const isExpanded =
-    query.length > 0 || expandedCategory === categoryId;
+        const isExpanded =
+            query.length > 0 ||
+            expandedCategory === categoryId;
 
-content.hidden = !isExpanded;
+        content.hidden = !isExpanded;
 
-button.setAttribute(
-    "aria-expanded",
-    String(isExpanded)
-);
-
-
+        button.setAttribute(
+            "aria-expanded",
+            String(isExpanded)
+        );
 
         button.addEventListener("click", () => {
             if (searchInput.value.trim()) {
@@ -242,6 +311,10 @@ button.setAttribute(
 
         return section;
     }
+
+    /* ==================================================
+       RENDER CATALOGUE
+    ================================================== */
 
     function render() {
         const query = normalize(searchInput.value);
@@ -264,6 +337,10 @@ button.setAttribute(
         clearButton.hidden = searchInput.value.length === 0;
     }
 
+    /* ==================================================
+       SEARCH EVENTS
+    ================================================== */
+
     searchInput.addEventListener("input", () => {
         render();
     });
@@ -271,9 +348,15 @@ button.setAttribute(
     clearButton.addEventListener("click", () => {
         searchInput.value = "";
         expandedCategory = null;
+
         render();
+
         searchInput.focus();
     });
+
+    /* ==================================================
+       INITIALIZE
+    ================================================== */
 
     render();
 })();
