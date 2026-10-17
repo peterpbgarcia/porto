@@ -3,12 +3,16 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1"
+  >
   <meta name="theme-color" content="#4AAEE8">
 
   <title>Canto</title>
 
-  <!-- Song viewer stylesheet -->
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/songbook-viewer.css">
 </head>
 
@@ -17,18 +21,57 @@
   <header class="song-viewer-header">
 
     <!-- Guitar tuner: LEFT -->
-    
-<!-- Guitar tuner: LEFT -->
-<button
-  id="openTuner"
-  class="header-action guitar-button"
-  type="button"
-  aria-label="Apri accordatore"
-  title="Accordatore"
->
-  🎸
-</button>
+    <button
+      id="openTuner"
+      class="header-action guitar-button"
+      type="button"
+      aria-label="Apri accordatore"
+      title="Accordatore"
+    >
+      <svg
+        viewBox="0 0 100 100"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <!-- Guitar pick -->
+        <path
+          d="M50 12
+             C36 12 17 22 18 39
+             C19 57 39 78 50 87
+             C61 78 81 57 82 39
+             C83 22 64 12 50 12Z"
+          fill="#FFFFFF"
+        />
 
+        <!-- Tuning fork -->
+        <path
+          d="M39 37 V30
+             Q39 25 44 25
+             M61 37 V30
+             Q61 25 56 25
+             M39 37 V44
+             Q39 49 44 49
+             H56
+             Q61 49 61 44
+             V37
+             M50 49 V65"
+          fill="none"
+          stroke="#1683c6"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
+        <!-- Fork tip -->
+        <circle
+          cx="50"
+          cy="69"
+          r="3"
+          fill="#1683c6"
+        />
+      </svg>
+    </button>
 
     <!-- Transposition: CENTER -->
     <div
@@ -64,19 +107,6 @@
         +
       </button>
     </div>
-
-    <!-- Close: RIGHT -->
-    <button
-      id="closeViewer"
-      class="header-action"
-      type="button"
-      aria-label="Chiudi canto"
-      title="Chiudi"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m6 6 12 12M18 6 6 18"/>
-      </svg>
-    </button>
 
   </header>
 
