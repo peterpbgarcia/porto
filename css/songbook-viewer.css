@@ -1,7 +1,7 @@
 
 /* =========================================
    INDIVIDUAL SONG VIEWER
-   Isolated from the main app stylesheet
+   Shared header appearance from style.css
 ========================================= */
 
 :root {
@@ -30,34 +30,91 @@ body.song-viewer-page {
     font-family: Arial, sans-serif;
 }
 
-/* HEADER */
+/* =========================================
+   HEADER
+   Height, background and typography are
+   controlled by css/style.css
+========================================= */
 
-.song-viewer-header {
+.song-viewer-page .song-viewer-header {
     position: relative;
+    top: auto;
     z-index: 10;
+
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    width: 100%;
-    height: 70px;
-    min-height: 70px;
-    padding: 0 14px;
-
-    background: var(--viewer-blue);
-    color: #FFFFFF;
-}
-
-/* LEFT AND RIGHT ICON BUTTONS */
-
-.header-action {
-    display: inline-flex;
-    flex: 0 0 44px;
+    flex: 0 0 42px;
     align-items: center;
     justify-content: center;
 
-    width: 44px;
-    height: 44px;
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+/* =========================================
+   GUITAR TUNER — FIXED LEFT POSITION
+========================================= */
+
+.song-viewer-page .song-viewer-header #openTuner {
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    right: auto;
+    bottom: auto;
+    transform: translateY(-50%);
+
+    display: flex;
+    flex: 0 0 36px;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #FFFFFF;
+
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.song-viewer-page .song-viewer-header #openTuner svg {
+    display: block;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+}
+
+/* =========================================
+   CLOSE BUTTON — FIXED RIGHT POSITION
+========================================= */
+
+.song-viewer-page .song-viewer-header #closeViewer {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    left: auto;
+    bottom: auto;
+    transform: translateY(-50%);
+
+    display: inline-flex;
+    flex: 0 0 36px;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    margin: 0;
     padding: 0;
 
     border: none;
@@ -69,43 +126,42 @@ body.song-viewer-page {
     -webkit-tap-highlight-color: transparent;
 }
 
-.header-action svg {
-    display: block;
-    width: 25px;
-    height: 25px;
-
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.header-action:active {
+.song-viewer-page .song-viewer-header #closeViewer:active {
     background: rgba(255, 255, 255, 0.16);
 }
 
-/* CENTERED TRANSPOSITION CONTROLS */
+/* =========================================
+   CENTERED TRANSPOSITION CONTROLS
+========================================= */
 
-.transpose-controls {
+.song-viewer-page .song-viewer-header .transpose-controls {
     position: absolute;
     top: 50%;
     left: 50%;
+    right: auto;
+    bottom: auto;
     transform: translate(-50%, -50%);
 
     display: flex;
+    flex: none;
     align-items: center;
     justify-content: center;
     gap: 8px;
+
+    width: max-content;
+    margin: 0;
+    padding: 0;
 }
 
-.transpose-button,
-.transpose-value {
+.song-viewer-page .transpose-button,
+.song-viewer-page .transpose-value {
     display: inline-flex;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
 
     height: 36px;
+    margin: 0;
     padding: 0;
 
     border: none;
@@ -116,36 +172,42 @@ body.song-viewer-page {
     font-family: Arial, sans-serif;
     line-height: 1;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.transpose-button {
+.song-viewer-page .transpose-button {
     width: 36px;
     font-size: 22px;
 }
 
-.transpose-value {
+.song-viewer-page .transpose-value {
     width: 42px;
     font-size: 16px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
 
-.transpose-button:active,
-.transpose-value:active {
+.song-viewer-page .transpose-button:active,
+.song-viewer-page .transpose-value:active {
     background: #EAF6FF;
 }
 
-/* SONG AREA: PURE WHITE */
+/* =========================================
+   SONG AREA
+========================================= */
 
-.song-viewport {
+.song-viewer-page .song-viewport {
+    display: block;
     width: 100%;
-    height: calc(100vh - 70px);
-    height: calc(100dvh - 70px);
+    height: calc(100vh - 42px);
+    height: calc(100dvh - 42px);
+    margin: 0;
+    padding: 0;
     overflow: hidden;
     background: #FFFFFF;
 }
 
-.song-viewport iframe {
+.song-viewer-page .song-viewport iframe {
     display: block;
     width: 100%;
     height: 100%;
@@ -157,59 +219,43 @@ body.song-viewer-page {
     background: #FFFFFF;
 }
 
-/* KEYBOARD ACCESSIBILITY */
+/* =========================================
+   KEYBOARD ACCESSIBILITY
+========================================= */
 
-.header-action:focus-visible,
-.transpose-button:focus-visible,
-.transpose-value:focus-visible {
+.song-viewer-page .header-action:focus-visible,
+.song-viewer-page .transpose-button:focus-visible,
+.song-viewer-page .transpose-value:focus-visible {
     outline: 2px solid #FFFFFF;
     outline-offset: 2px;
 }
 
-/* SMALL SCREENS */
+/* =========================================
+   SMALL SCREENS
+========================================= */
 
 @media (max-width: 380px) {
-    .song-viewer-header {
-        padding: 0 8px;
+    .song-viewer-page .song-viewer-header {
+        padding: 0;
     }
 
-    .header-action {
-        flex-basis: 40px;
-        width: 40px;
+    .song-viewer-page .song-viewer-header #openTuner {
+        left: 4px;
     }
 
-    .transpose-controls {
+    .song-viewer-page .song-viewer-header #closeViewer {
+        right: 4px;
+    }
+
+    .song-viewer-page .transpose-controls {
         gap: 6px;
     }
 }
 
-
-
-
-
 /* =========================================
-   GUITAR EMOJI BUTTON
+   PARENT OVERLAY CLOSE BUTTON
 ========================================= */
 
-.header-action.guitar-button {
-    flex: 0 0 56px;
-    width: 56px;
-    height: 56px;
-
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
-    font-size: 40px;
-    line-height: 1;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-    overflow: visible;
+#pageOverlayClose {
+    display: none !important;
 }
-
-/* Prevent SVG sizing rules from affecting the emoji */
-.header-action.guitar-button svg {
-    display: none;
-}
-

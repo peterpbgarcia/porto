@@ -42,38 +42,77 @@ body {
 }
 
 
+
 /* ==========================================================
-   GENERAL HEADER
+   GLOBAL HEADER SYSTEM
 ========================================================== */
 
 header {
     position: sticky;
     top: 0;
     z-index: 1000;
+
     display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    height: 70px;
-    padding: 0 20px;
+
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 48px 0 10px;
+
     background: var(--main-blue);
     color: #ffffff;
     text-align: center;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, .12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
 }
 
 header h1 {
     margin: 0;
-    font-size: 22px;
+    padding: 0;
+    color: inherit;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 17px;
     font-weight: normal;
     line-height: 1.1;
+    text-align: center;
 }
 
 header p {
-    margin: 3px 0 0;
-    font-size: 1rem;
-    line-height: 1.2;
-    opacity: .95;
+    display: none;
 }
+
+/* Canti catalogue */
+.songbook-header {
+    justify-content: center;
+}
+
+/* HTML song viewer */
+.song-viewer-header {
+    position: relative;
+    top: auto;
+    z-index: 10;
+    flex: 0 0 42px;
+    justify-content: space-between;
+    padding: 0 14px;
+}
+
+/* PDF song viewer */
+.pdf-song-viewer-header {
+    position: relative;
+    top: auto;
+    z-index: 10;
+    flex: 0 0 42px;
+    display: grid;
+    grid-template-columns: 56px 1fr 56px;
+    align-items: center;
+    padding: 0 8px;
+}
+
+
+
 
 
 /* ==========================================================
@@ -800,14 +839,17 @@ body.mass-song-open {
         font-size: 16px;
     }
 
-    header {
-        height: 64px;
-        padding: 0 15px;
-    }
 
-    header h1 {
-        font-size: 19px;
-    }
+header {
+    height: 42px;
+    min-height: 42px;
+    padding: 0 48px 0 10px;
+}
+
+header h1 {
+    font-size: 17px;
+}
+
 
     main {
         padding: 12px;
@@ -859,3 +901,51 @@ body.mass-song-open {
         font-size: 22px;
     }
 }
+
+
+
+
+
+
+
+
+
+/* ==========================================================
+   UNIVERSAL GUITAR TUNER BUTTON
+   Consistent position across all pages
+========================================================== */
+
+header .guitar-button {
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    right: auto;
+    transform: translateY(-50%);
+    z-index: 2;
+
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    flex: 0 0 36px;
+
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #4AAEE8;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+header .guitar-button svg {
+    display: block;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+}
+

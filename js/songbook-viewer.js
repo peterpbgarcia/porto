@@ -3,7 +3,13 @@
 
 /* =========================================================
    SONGBOOK VIEWER
-   HTML songs, chord transposition and tuner overlay
+   Shared overlay stack
+   HTML songs, chord transposition and guitar tuner
+========================================================= */
+
+
+/* =========================================================
+   ELEMENTS AND STATE
 ========================================================= */
 
 const params = new URLSearchParams(window.location.search);
@@ -14,11 +20,11 @@ const minusButton = document.getElementById("transposeDown");
 const plusButton = document.getElementById("transposeUp");
 const resetButton = document.getElementById("transposeReset");
 const tunerButton = document.getElementById("openTuner");
-const closeButton = document.getElementById("closeViewer");
 
 let semitones = 0;
 let originalBodyHTML = null;
 let songDocument = null;
+
 
 /* =========================================================
    TRANSPOSITION DISPLAY
@@ -28,7 +34,7 @@ function updateTransposeDisplay() {
     if (!resetButton) return;
 
     resetButton.textContent =
-        semitones > 0 ? `+${semitones}` : `${semitones}`;
+        semitones > 0 ? `+${semitones}` : String(semitones);
 
     resetButton.setAttribute(
         "aria-label",
@@ -39,6 +45,7 @@ function updateTransposeDisplay() {
 }
 
 updateTransposeDisplay();
+
 
 /* =========================================================
    ITALIAN NOTE NAMES
@@ -72,6 +79,7 @@ function getNoteValue(note, accidental = "") {
     return ((value % 12) + 12) % 12;
 }
 
+
 /* =========================================================
    TRANSPOSE CHORDS
 ========================================================= */
@@ -79,7 +87,9 @@ function getNoteValue(note, accidental = "") {
 function transposeChordPart(part, steps) {
     if (!part || steps === 0) return part;
 
-    const match = part.match(/^(DO|RE|MI|FA|SOL|LA|SI)(#|b)?(.*)$/i);
+    const match = part.match(
+        /^(DO|RE|MI|FA|SOL|LA|SI)(#|b)?(.*)$/i
+    );
 
     if (!match) return part;
 
@@ -106,8 +116,9 @@ function transposeChordToken(token, steps) {
         .join("/");
 }
 
+
 /* =========================================================
-   LOAD SONG AS WINDOWS-1252
+   LOAD SONG
 ========================================================= */
 
 async function loadSong() {
@@ -134,6 +145,7 @@ async function loadSong() {
         const html = new TextDecoder("windows-1252").decode(buffer);
 
         songFrame.srcdoc = html;
+
     } catch (error) {
         console.error("Song viewer:", error);
 
@@ -144,7 +156,8 @@ async function loadSong() {
             <html lang="it">
             <head>
                 <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <meta name="viewport"
+                      content="width=device-width, initial-scale=1">
                 <style>
                     body {
                         padding: 20px;
@@ -155,12 +168,13 @@ async function loadSong() {
             </head>
             <body>
                 <p>Impossibile caricare il canto.</p>
-                <p>Controlla il percorso del file e la connessione.</p>
+                <p>Controlla il percorso del file.</p>
             </body>
             </html>
         `;
     }
 }
+
 
 /* =========================================================
    SONG LOADED
@@ -190,12 +204,16 @@ songFrame?.addEventListener("load", () => {
         console.log("Song loaded successfully.");
         console.log(
             "Chord paragraphs found:",
-            doc.querySelectorAll("p.TestoAccorde").length
+            doc.querySelectorAll(
+                "p.TestoAccorde, li.TestoAccorde, div.TestoAccorde"
+            ).length
         );
+
     } catch (error) {
         console.error("Error accessing the song:", error);
     }
 });
+
 
 /* =========================================================
    APPLY TRANSPOSITION
@@ -237,6 +255,7 @@ function applyTransposition() {
     });
 }
 
+
 /* =========================================================
    TRANSPOSITION BUTTONS
 ========================================================= */
@@ -259,75 +278,32 @@ resetButton?.addEventListener("click", () => {
     applyTransposition();
 });
 
-/* =========================================================
-   TUNER OVERLAY
-   Keeps the current song and transposition loaded.
-========================================================= */
-
-let tunerOverlay = null;
-
-function openTunerOverlay() {
-    if (tunerOverlay) return;
-
-    tunerOverlay = document.createElement("div");
-
-    Object.assign(tunerOverlay.style, {
-        position: "fixed",
-        inset: "0",
-        zIndex: "99999",
-        background: "#eaf6ff"
-    });
-
-    const tunerFrame = document.createElement("iframe");
-
-    tunerFrame.src = "guitar-tuner.html?returnToSong=1";
-    tunerFrame.title = "Accordatore per chitarra";
-    tunerFrame.allow = "microphone";
-    tunerFrame.setAttribute("allow", "microphone");
-
-    Object.assign(tunerFrame.style, {
-        width: "100%",
-        height: "100%",
-        border: "0",
-        display: "block"
-    });
-
-    tunerOverlay.appendChild(tunerFrame);
-    document.body.appendChild(tunerOverlay);
-}
-
-function closeTunerOverlay() {
-    if (!tunerOverlay) return;
-
-    const frame = tunerOverlay.querySelector("iframe");
-
-    if (frame) {
-        frame.src = "about:blank";
-    }
-
-    tunerOverlay.remove();
-    tunerOverlay = null;
-}
-
-tunerButton?.addEventListener("click", openTunerOverlay);
-
-window.addEventListener("message", event => {
-    if (event.data?.type === "closeTuner") {
-        closeTunerOverlay();
-    }
-});
 
 /* =========================================================
-   CLOSE VIEWER
+   OPEN GUITAR TUNER AS A NEW STACK LAYER
 ========================================================= */
 
-closeButton?.addEventListener("click", () => {
-    if (window.parent !== window) {
-        window.parent.history.back();
-    } else {
-        window.location.href = "songbook.html";
+tunerButton?.addEventListener("click", () => {
+    if (window.parent === window) {
+        console.warn(
+            "The tuner requires the shared parent overlay manager."
+        );
+        return;
     }
+
+    if (typeof window.parent.requestOpenPageOverlay !== "function") {
+        console.error(
+            "The parent overlay manager is unavailable."
+        );
+        return;
+    }
+
+    window.parent.requestOpenPageOverlay("guitar-tuner.html");
 });
 
-/* Start loading the song. */
+
+/* =========================================================
+   START
+========================================================= */
+
 loadSong();

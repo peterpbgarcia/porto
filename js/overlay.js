@@ -1,242 +1,164 @@
 
+"use strict";
+
 /* ==========================================================
-   FULL-SCREEN OVERLAY
+   FULL-SCREEN OVERLAY STACK
    COMPENDIUM 9.0
+
+   - Index remains the base page.
+   - New pages open above existing pages.
+   - Closing removes only the topmost page.
+   - No browser-history manipulation.
 ========================================================== */
 
 
 /* ==========================================================
-   STATE
+   ELEMENTS AND STATE
 ========================================================== */
 
-let overlayOpen = false;
+const pageOverlay = document.getElementById("pageOverlay");
+const pageOverlayClose = document.getElementById("pageOverlayClose");
+
+const overlayStack = [];
+
+let backButtonListenerRegistered = false;
 
 
 /* ==========================================================
-   OVERLAY ELEMENT
-========================================================== */
-
-const pageOverlay =
-    document.getElementById("pageOverlay");
-
-const pageOverlayClose =
-    document.getElementById("pageOverlayClose");
-
-
-/* ==========================================================
-   CHECK WHETHER A SONGBOOK VIEWER IS OPEN
+   VIEWER DETECTION
 ========================================================== */
 
 function isSongbookViewer(url) {
-
     return /(?:^|\/)(?:songbook-viewer|pdf-songbook-viewer)\.html(?:[?#]|$)/i
         .test(String(url || ""));
 }
 
 
 /* ==========================================================
-   OPEN OVERLAY
+   UPDATE STACK
+========================================================== */
+
+function updateOverlayStack() {
+    if (!pageOverlay) return;
+
+    const hasOverlays = overlayStack.length > 0;
+    const topIndex = overlayStack.length - 1;
+    const topOverlay = overlayStack[topIndex];
+
+    pageOverlay.classList.toggle("active", hasOverlays);
+    pageOverlay.setAttribute("aria-hidden", String(!hasOverlays));
+
+    document.body.classList.toggle("overlay-open", hasOverlays);
+
+    overlayStack.forEach((item, index) => {
+        const isTop = index === topIndex;
+
+        item.frame.classList.toggle("overlay-top", isTop);
+        item.frame.style.zIndex = String(index + 1);
+        item.frame.style.visibility = isTop ? "visible" : "hidden";
+        item.frame.style.pointerEvents = isTop ? "auto" : "none";
+        item.frame.setAttribute("aria-hidden", String(!isTop));
+    });
+
+    if (pageOverlayClose) {
+    pageOverlayClose.style.display = hasOverlays ? "flex" : "none";
+}
+}
+
+
+/* ==========================================================
+   OPEN A NEW OVERLAY
 ========================================================== */
 
 function openPageOverlay(url) {
+    if (!pageOverlay || !url) return;
 
-    if (!pageOverlay) {
-        return;
-    }
+    const frame = document.createElement("iframe");
 
-    /* ------------------------------------------
-       Remove old iframe completely
-    ------------------------------------------ */
-
-    const oldFrame =
-        document.getElementById("pageOverlayFrame");
-
-    if (oldFrame) {
-        oldFrame.remove();
-    }
-
-
-    /* ------------------------------------------
-       Show or hide the outer X
-
-       Songbook viewers have their own X.
-       Other overlay pages keep the outer X.
-    ------------------------------------------ */
-
-    if (pageOverlayClose) {
-
-        pageOverlayClose.style.display =
-            isSongbookViewer(url) ? "none" : "";
-
-    }
-
-
-    /* ------------------------------------------
-       Create NEW iframe
-    ------------------------------------------ */
-
-    const frame =
-        document.createElement("iframe");
-
-    frame.id = "pageOverlayFrame";
     frame.className = "page-overlay-frame";
     frame.title = "Contenuto";
-
     frame.setAttribute("allow", "microphone");
     frame.setAttribute("allowfullscreen", "");
+    frame.setAttribute("loading", "eager");
 
-    frame.src = url;
+    const item = {
+        frame: frame,
+        url: String(url)
+    };
 
+    /*
+     * Keep all existing frames alive.
+     * The new frame becomes the topmost layer.
+     */
+
+    overlayStack.push(item);
     pageOverlay.appendChild(frame);
 
+    updateOverlayStack();
 
-    /* ------------------------------------------
-       Add browser history state
-    ------------------------------------------ */
-
-    history.pushState(
-        { pageOverlay: true },
-        "",
-        window.location.href
-    );
-
-
-    /* ------------------------------------------
-       Show overlay
-    ------------------------------------------ */
-
-    pageOverlay.classList.add("active");
-
-    pageOverlay.setAttribute("aria-hidden", "false");
-
-    overlayOpen = true;
-
-
-    /* ------------------------------------------
-       Lock background
-    ------------------------------------------ */
-
-    document.body.classList.add("overlay-open");
-
-
-    /* ------------------------------------------
-       Focus outer X only when visible
-    ------------------------------------------ */
-
-    if (
-        pageOverlayClose &&
-        pageOverlayClose.style.display !== "none"
-    ) {
-        pageOverlayClose.focus();
-    }
-
+    frame.src = item.url;
 }
 
 
 /* ==========================================================
-   CLOSE OVERLAY
+   CLOSE ONLY THE TOPMOST OVERLAY
 ========================================================== */
 
 function closePageOverlay() {
+    if (!pageOverlay || overlayStack.length === 0) return;
 
-    if (!overlayOpen) {
-        return;
-    }
+    const item = overlayStack.pop();
 
+    /*
+     * Remove only the topmost frame.
+     * Previous frames remain loaded underneath.
+     */
 
-    /* ------------------------------------------
-       Hide overlay
-    ------------------------------------------ */
+    item.frame.src = "about:blank";
+    item.frame.remove();
 
-    pageOverlay.classList.remove("active");
-
-    pageOverlay.setAttribute("aria-hidden", "true");
-
-
-    /* ------------------------------------------
-       DESTROY iframe
-    ------------------------------------------ */
-
-    const frame =
-        document.getElementById("pageOverlayFrame");
-
-    if (frame) {
-        frame.remove();
-    }
-
-
-    /* ------------------------------------------
-       Restore outer X for future overlays
-    ------------------------------------------ */
-
-    if (pageOverlayClose) {
-        pageOverlayClose.style.display = "";
-    }
-
-
-    /* ------------------------------------------
-       Update state
-    ------------------------------------------ */
-
-    overlayOpen = false;
-
-
-    /* ------------------------------------------
-       Restore background
-    ------------------------------------------ */
-
-    document.body.classList.remove("overlay-open");
-
+    updateOverlayStack();
 }
 
 
 /* ==========================================================
-   BROWSER / GESTURE BACK
+   FUNCTIONS AVAILABLE TO INNER PAGES
 ========================================================== */
 
-window.addEventListener("popstate", () => {
+window.openPageOverlay = openPageOverlay;
+window.closePageOverlay = closePageOverlay;
 
-    if (overlayOpen) {
-        closePageOverlay();
-    }
+window.requestOpenPageOverlay = function (url) {
+    openPageOverlay(url);
+};
 
-});
+window.requestClosePageOverlay = function () {
+    closePageOverlay();
+};
 
 
 /* ==========================================================
-   X BUTTON
+   OUTER CLOSE BUTTON
 ========================================================== */
 
 if (pageOverlayClose) {
-
-    pageOverlayClose.addEventListener("click", () => {
-
-        if (overlayOpen) {
-            history.back();
-        }
-
+    pageOverlayClose.addEventListener("click", function () {
+        closePageOverlay();
     });
-
 }
 
 
 /* ==========================================================
-   GUITAR TUNER
+   GUITAR TUNER LINK
 ========================================================== */
 
-const guitarLink =
-    document.querySelector(".guitar-link");
+const guitarLink = document.querySelector(".guitar-link");
 
 if (guitarLink) {
-
-    guitarLink.addEventListener("click", event => {
-
+    guitarLink.addEventListener("click", function (event) {
         event.preventDefault();
-
         openPageOverlay(guitarLink.href);
-
     });
-
 }
 
 
@@ -244,19 +166,11 @@ if (guitarLink) {
    FOOTER PDF LINKS
 ========================================================== */
 
-const footerLinks =
-    document.querySelectorAll(".songbook-footer a");
-
-footerLinks.forEach(link => {
-
-    link.addEventListener("click", event => {
-
+document.querySelectorAll(".songbook-footer a").forEach(function (link) {
+    link.addEventListener("click", function (event) {
         event.preventDefault();
-
         openPageOverlay(link.href);
-
     });
-
 });
 
 
@@ -268,27 +182,47 @@ if (
     window.Capacitor &&
     window.Capacitor.isNativePlatform()
 ) {
+    const App = window.Capacitor.Plugins?.App;
 
-    const App =
-        window.Capacitor.Plugins?.App;
+    if (App && !backButtonListenerRegistered) {
+        backButtonListenerRegistered = true;
 
-    if (App) {
-
-        App.addListener("backButton", () => {
-
-            /* Overlay open: close it. */
-
-            if (overlayOpen) {
-                history.back();
+        App.addListener("backButton", function () {
+            if (overlayStack.length > 0) {
+                closePageOverlay();
                 return;
             }
 
-            /* Otherwise, return to index. */
-
             window.location.replace("index.html");
-
         });
+    }
+}
 
+
+/* ==========================================================
+   HOMEPAGE NAVIGATION
+========================================================== */
+
+document.addEventListener("click", function (event) {
+    const target = event.target;
+
+    if (!(target instanceof Element)) return;
+
+    const link = target.closest(".app-grid a");
+
+    if (!link) return;
+    if (!document.querySelector("main.home")) return;
+
+    if (
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        event.altKey ||
+        event.button !== 0
+    ) {
+        return;
     }
 
-}
+    event.preventDefault();
+    openPageOverlay(link.href);
+});
