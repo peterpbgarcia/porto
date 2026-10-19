@@ -3,14 +3,11 @@
    SERVICE WORKER
 ========================================== */
 
-const CACHE_NAME = "compendio-v9.0.7";
-
-const UPDATE_CACHE_NAME =
-    CACHE_NAME + "-update";
-
+const CACHE_NAME = "compendio-v9.0.8";
+const UPDATE_CACHE_NAME = CACHE_NAME + "-update";
 
 /* ==========================================
-   FILES TO CACHE
+   FILES TO CACHE (Relative paths)
 ========================================== */
 
 const APP_FILES = [
@@ -471,590 +468,137 @@ const APP_FILES = [
     "songbook-viewer.html"
 ];
 
-
 /* ==========================================
    INSTALL
 ========================================== */
 
-self.addEventListener(
-    "install",
-    event => {
-
-        event.waitUntil(
-
-            caches.open(CACHE_NAME)
-
-            .then(async cache => {
-
-                for(
-                    const file of APP_FILES
-                ){
-
-                    try{
-
-                        await cache.add(file);
-
-                        console.log(
-                            "Cached:",
-                            file
-                        );
-
-                    }
-
-                    catch(error){
-
-                        console.error(
-                            "Cache failed:",
-                            file,
-                            error
-                        );
-
-                    }
-
+self.addEventListener("install", event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+        .then(async cache => {
+            for (const file of APP_FILES) {
+                try {
+                    await cache.add(file);
+                    console.log("Cached:", file);
+                } catch (error) {
+                    console.error("Cache failed:", file, error);
                 }
-
-            })
-
-        );
-
-        /*
-            Activate the new Service Worker
-            immediately.
-        */
-
-        self.skipWaiting();
-
-    }
-);
-
+            }
+        })
+    );
+    self.skipWaiting();
+});
 
 /* ==========================================
    ACTIVATE
 ========================================== */
 
-self.addEventListener(
-    "activate",
-    event => {
-
-        event.waitUntil(
-
-            caches.keys()
-
-            .then(keys => {
-
-                return Promise.all(
-
-                    keys.map(key => {
-
-                        /*
-                            Keep only the current
-                            main cache.
-
-                            This also removes old
-                            cache versions and
-                            temporary update caches.
-                        */
-
-                        if(
-                            key !== CACHE_NAME
-                        ){
-
-                            return caches.delete(
-                                key
-                            );
-
-                        }
-
-                    })
-
-                );
-
-            })
-
-            .then(() => {
-
-                /*
-                    Take control of all open
-                    pages immediately.
-                */
-
-                return self.clients.claim();
-
-            })
-
-        );
-
-    }
-);
-
+self.addEventListener("activate", event => {
+    event.waitUntil(
+        caches.keys()
+        .then(keys => {
+            return Promise.all(
+                keys.map(key => {
+                    if (key !== CACHE_NAME) {
+                        return caches.delete(key);
+                    }
+                })
+            );
+        })
+        .then(() => self.clients.claim())
+    );
+});
 
 /* ==========================================
    MANUAL UPDATE
 ========================================== */
 
-self.addEventListener(
-    "message",
-    event => {
-
-        /*
-            Ignore messages that are not
-            intended for the update system.
-        */
-
-        if(
-            !event.data ||
-            event.data.type !== "UPDATE_APP"
-        ){
-
-            return;
-
-        }
-
-        /*
-            Perform the complete update.
-        */
-
-        event.waitUntil(
-
-            updateApp()
-
-            .then(() => {
-
-                /*
-                    Tell the page that the
-                    update succeeded.
-                */
-
-                if(
-                    event.ports &&
-                    event.ports[0]
-                ){
-
-                    event.ports[0].postMessage({
-                        success: true
-                    });
-
-                }
-
-            })
-
-            .catch(error => {
-
-                console.error(
-                    "App update failed:",
-                    error
-                );
-
-                /*
-                    Tell the page that the
-                    update failed.
-                */
-
-                if(
-                    event.ports &&
-                    event.ports[0]
-                ){
-
-                    event.ports[0].postMessage({
-
-                        success: false,
-
-                        error:
-                            error.message
-
-                    });
-
-                }
-
-            })
-
-        );
-
+self.addEventListener("message", event => {
+    if (!event.data || event.data.type !== "UPDATE_APP") {
+        return;
     }
-);
 
-
-/* ==========================================
-   UPDATE APP
-========================================== */
-
-async function updateApp(){
-
-    console.log(
-        "================================"
-    );
-
-    console.log(
-        "Starting complete app update..."
-    );
-
-    console.log(
-        "================================"
-    );
-
-    /*
-       1.
-       Delete any previous temporary
-       update cache.
-    */
-
-    await caches.delete(
-        UPDATE_CACHE_NAME
-    );
-
-    /*
-       2.
-       Create a temporary cache.
-
-       The existing main cache remains
-       untouched while the new files
-       are being downloaded.
-    */
-
-    const updateCache =
-        await caches.open(
-            UPDATE_CACHE_NAME
-        );
-
-    /*
-       3.
-       Download EVERYTHING again
-       directly from the server.
-    */
-
-    for(
-        const file of APP_FILES
-    ){
-
-        try{
-
-            console.log(
-                "Downloading:",
-                file
-            );
-
-            /*
-                Force a fresh network request.
-
-                This prevents the browser from
-                simply returning an old HTTP-cached
-                version.
-            */
-
-            const response =
-                await fetch(
-                    file,
-                    {
-                        cache: "reload"
-                    }
-                );
-
-            /*
-                Make sure the server returned
-                a successful response.
-            */
-
-            if(
-                !response.ok
-            ){
-
-                throw new Error(
-                    "HTTP " +
-                    response.status +
-                    " - " +
-                    file
-                );
-
+    event.waitUntil(
+        updateApp()
+        .then(() => {
+            if (event.ports && event.ports[0]) {
+                event.ports[0].postMessage({ success: true });
             }
+        })
+        .catch(error => {
+            console.error("App update failed:", error);
+            if (event.ports && event.ports[0]) {
+                event.ports[0].postMessage({ success: false, error: error.message });
+            }
+        })
+    );
+});
 
-            /*
-                Save the fresh response into
-                the temporary cache.
-            */
+async function updateApp() {
+    await caches.delete(UPDATE_CACHE_NAME);
+    const updateCache = await caches.open(UPDATE_CACHE_NAME);
 
-            await updateCache.put(
-                file,
-                response.clone()
-            );
-
-            console.log(
-                "Updated:",
-                file
-            );
-
+    for (const file of APP_FILES) {
+        try {
+            const response = await fetch(file, { cache: "reload" });
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status + " - " + file);
+            }
+            await updateCache.put(file, response.clone());
+        } catch (error) {
+            await caches.delete(UPDATE_CACHE_NAME);
+            throw new Error("Impossibile aggiornare:\n" + file + "\n\n" + error.message);
         }
-
-        catch(error){
-
-            console.error(
-                "UPDATE FAILED:",
-                file,
-                error
-            );
-
-            /*
-                Delete the temporary cache.
-
-                The old working cache remains
-                completely untouched.
-            */
-
-            await caches.delete(
-                UPDATE_CACHE_NAME
-            );
-
-            /*
-                Report exactly which file
-                caused the update to fail.
-            */
-
-            throw new Error(
-                "Impossibile aggiornare:\n" +
-                file +
-                "\n\n" +
-                error.message
-            );
-
-        }
-
     }
 
-    /*
-       4.
-       Open the existing main cache.
-    */
-
-    const mainCache =
-        await caches.open(
-            CACHE_NAME
-        );
-
-    /*
-       5.
-       Remove everything from the
-       old main cache.
-    */
-
-    const oldRequests =
-        await mainCache.keys();
-
-    for(
-        const request of oldRequests
-    ){
-
-        await mainCache.delete(
-            request
-        );
-
+    const mainCache = await caches.open(CACHE_NAME);
+    const oldRequests = await mainCache.keys();
+    for (const request of oldRequests) {
+        await mainCache.delete(request);
     }
 
-    /*
-       6.
-       Copy all newly downloaded files
-       from the temporary cache into
-       the main cache.
-    */
-
-    const newRequests =
-        await updateCache.keys();
-
-    for(
-        const request of newRequests
-    ){
-
-        const response =
-            await updateCache.match(
-                request
-            );
-
-        if(response){
-
-            await mainCache.put(
-                request,
-                response
-            );
-
+    const newRequests = await updateCache.keys();
+    for (const request of newRequests) {
+        const response = await updateCache.match(request);
+        if (response) {
+            await mainCache.put(request, response);
         }
-
     }
 
-    /*
-       7.
-       Delete the temporary cache.
-    */
-
-    await caches.delete(
-        UPDATE_CACHE_NAME
-    );
-
-    /*
-       Update completed.
-    */
-
-    console.log(
-        "================================"
-    );
-
-    console.log(
-        "COMPENDIO DI PREGHIERE UPDATED SUCCESSFULLY."
-    );
-
-    console.log(
-        "================================"
-    );
-
+    await caches.delete(UPDATE_CACHE_NAME);
 }
-
 
 /* ==========================================
    FETCH
 ========================================== */
 
-self.addEventListener(
-    "fetch",
-    event => {
+self.addEventListener("fetch", event => {
+    const request = event.request;
+    if (request.method !== "GET") return;
 
-        const request =
-            event.request;
+    const url = new URL(request.url);
+    if (url.origin !== location.origin) return;
 
-        /*
-            Only handle GET requests.
-        */
+    event.respondWith(
+        caches.open(CACHE_NAME)
+        .then(async cache => {
+            let cached = await cache.match(request);
+            if (cached) return cached;
 
-        if(
-            request.method !== "GET"
-        ){
+            // Strip leading slashes and query params for relative matching
+            const relativePath = url.pathname.replace(/^\/+\/?/, "").replace(/^porto\//, "");
+            cached = await cache.match(relativePath);
+            if (cached) return cached;
 
-            return;
-
-        }
-
-        const url =
-            new URL(
-                request.url
-            );
-
-        /*
-            Only handle requests belonging
-            to this website.
-        */
-
-        if(
-            url.origin !== location.origin
-        ){
-
-            return;
-
-        }
-
-        event.respondWith(
-
-            caches.open(
-                CACHE_NAME
-            )
-
-            .then(async cache => {
-
-                /*
-                     1.
-                     Try exact request.
-
-                     Example:
-
-                     songbook-viewer.html?page=134
-                */
-
-                let cached =
-                    await cache.match(
-                        request
-                    );
-
-                if(cached){
-
-                    return cached;
-
+            try {
+                const response = await fetch(request);
+                if (response && response.status === 200) {
+                    cache.put(relativePath, response.clone());
                 }
-
-                /*
-                     2.
-                     Remove query parameters.
-
-                     Example:
-
-                     songbook-viewer.html?page=134
-
-                     becomes:
-
-                     songbook-viewer.html
-                */
-
-                cached =
-                    await cache.match(
-                        url.pathname.replace(/^\/+/, "")
-                    );
-
-                if(cached){
-
-                    return cached;
-
-                }
-
-                /*
-                     3.
-                     Try network.
-                */
-
-                try{
-
-                    const response =
-                        await fetch(
-                            request
-                        );
-
-                    /*
-                        Save successful network
-                        responses into the cache.
-                    */
-
-                    if(
-                        response &&
-                        response.status === 200
-                    ){
-
-                        cache.put(
-
-                            url.pathname.replace(/^\/+/, ""),
-
-                            response.clone()
-
-                        );
-
-                    }
-
-                    return response;
-
-                }
-
-                catch(error){
-
-                    console.warn(
-                        "Offline request failed:",
-                        url.href
-                    );
-
-                    /*
-                         Final offline fallback.
-                    */
-
-                    return cache.match(
-                        "index.html"
-                    );
-
-                }
-
-            })
-
-        );
-
-    }
-);
+                return response;
+            } catch (error) {
+                return cache.match("index.html");
+            }
+        })
+    );
+});
