@@ -11,84 +11,44 @@
 
 /* ==========================================================
    EDITABLE CONFIGURATION — SONG FOLDER ASSIGNMENTS
-==========================================================
-
-HOW TO ADD ANOTHER FOLDER TO A MASS CATEGORY:
-
-1. Create a folder inside songbook/.
-2. Put your song files inside that folder.
-3. Run AggiornaCanti.bat to regenerate the catalogue.
-4. Add the folder name to the appropriate list below.
-
-EXAMPLE — adding two folders to Comunione:
-
-"Comunione": [
-    "Comunione",
-    "Songbook Collection",
-    "My New Songs"
-],
-
-IMPORTANT:
-- Keep the 9 Mass category names on the LEFT unchanged.
-- Add folder names inside the corresponding array on the RIGHT.
-- You can add as many folders as you need.
-- Separate entries with commas.
-- Folder names may include their numeric prefix or omit it.
-  For example, "08 Comunione" and "Comunione" both match.
-- Use the category name displayed in the generated catalogue.
-- Do not create new Mass guide categories here.
-- A folder must exist in the generated catalogue to appear.
-
 ========================================================== */
 
 const MASS_SONG_FOLDERS = {
 
     "Ingresso": [
         "Ingresso"
-        // Add more folders here if needed.
     ],
 
     "Kyrie": [
         "Kyrie"
-        // Add more folders here if needed.
     ],
 
     "Gloria": [
         "Gloria"
-        // Add more folders here if needed.
     ],
 
     "Alleluia": [
         "Alleluia"
-        // Add more folders here if needed.
     ],
 
     "Offertorio": [
         "Offertorio"
-        // Add more folders here if needed.
     ],
 
     "Santo": [
         "Santo"
-        // Add more folders here if needed.
     ],
 
     "Agnello di Dio": [
         "Agnus Dei"
-        // Add more folders here if needed.
     ],
 
     "Comunione": [
         "Comunione"
-        // Example:
-        // ,"Songbook Collection"
-        // ,"My New Songs"
-        // ,"Adorazione"
     ],
 
     "Finale": [
         "Finale"
-        // Add more folders here if needed.
     ]
 
 };
@@ -133,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ======================================================
        READ GENERATED CATALOGUE
-       songs-generated.js must load before this script.
     ====================================================== */
 
     const categories =
@@ -194,13 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ======================================================
        NORMALIZE CATEGORY NAMES
-
-       Supports:
-       01 Ingresso
-       08 Comunione
-       category-08 Comunione
-
-       Accent differences and numeric prefixes are ignored.
     ====================================================== */
 
     function normalize(value) {
@@ -232,15 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* ======================================================
-       DETERMINE WHICH OF THE 9 MASS CATEGORIES WAS CLICKED
-
-       Sections such as Kyrie, Gloria, Santo and Agnello di Dio
-       are identified using data-song-section.
-
-       Ingresso, Offertorio, Comunione and Finale are identified
-       from the first category in data-song-category.
-
-       This keeps the Mass guide categories fixed.
+       DETERMINE MASS CATEGORY
     ====================================================== */
 
     function getMassCategory(categoryValue, section) {
@@ -256,23 +200,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }) || null;
         }
 
-        /*
-         * Prefer the specific Mass section.
-         * Example: "Agnello di Dio" maps to the fixed
-         * Mass category, whose folder is "Agnus Dei".
-         */
         if (section) {
             const matchedSection = findMassCategory(section);
-
-            if (matchedSection) {
-                return matchedSection;
-            }
+            if (matchedSection) return matchedSection;
         }
 
-        /*
-         * Otherwise use the first category requested by
-         * the Mass guide button.
-         */
         const requested = String(categoryValue || "")
             .split(",")
             .map(value => value.trim())
@@ -280,10 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         for (const name of requested) {
             const matched = findMassCategory(name);
-
-            if (matched) {
-                return matched;
-            }
+            if (matched) return matched;
         }
 
         return null;
@@ -291,10 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* ======================================================
-       GET ALL FOLDERS ASSIGNED TO A MASS CATEGORY
-
-       The configuration can contain multiple folders.
-       Each folder is matched to the generated catalogue.
+       GET ASSIGNED CATEGORIES
     ====================================================== */
 
     function getAssignedCategories(massCategoryName) {
@@ -309,19 +235,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!category) {
                 console.warn(
-                    `Mass song folder not found: "${folderName}". ` +
-                    `Check the name in MASS_SONG_FOLDERS and ` +
-                    `regenerate songs-generated.js if necessary.`
+                    `Mass song folder not found: "${folderName}".`
                 );
-
                 return;
             }
 
-            const alreadyAdded = resolved.some(item => {
-                return item === category;
-            });
-
-            if (!alreadyAdded) {
+            if (!resolved.includes(category)) {
                 resolved.push(category);
             }
         });
@@ -330,255 +249,184 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* ======================================================
-       OPEN SONG PANEL
-    ====================================================== */
+/* ======================================================
+    OPEN SONG PANEL
+====================================================== */
 
-    function openSongPanel(categoryValue, section) {
+function openSongPanel(categoryValue, section) {
 
-        if (massSongOpen) return;
+    if (massSongOpen) return;
 
-        const massCategoryName =
-            getMassCategory(categoryValue, section);
+    const massCategoryName =
+        getMassCategory(categoryValue, section);
 
-        const selectedCategories = massCategoryName
-            ? getAssignedCategories(massCategoryName)
+    const selectedCategories = massCategoryName
+        ? getAssignedCategories(massCategoryName)
+        : [];
+
+    let matchingSongs = [];
+
+    selectedCategories.forEach(category => {
+        const songs = Array.isArray(category.songs)
+            ? category.songs
             : [];
 
-        let matchingSongs = [];
-
-        selectedCategories.forEach(category => {
-
-            const songs = Array.isArray(category.songs)
-                ? category.songs
-                : [];
-
-            songs.forEach(song => {
-                matchingSongs.push({
-                    ...song,
-                    categoryName: getCategoryName(category)
-                });
+        songs.forEach(song => {
+            matchingSongs.push({
+                ...song,
+                categoryName: getCategoryName(category)
             });
-
         });
+    });
 
 
-        /* ==================================================
-           REMOVE DUPLICATE SONG FILES
-        ================================================== */
+    /* ==================================================
+        REMOVE DUPLICATE SONG FILES
+    ================================================== */
 
-        const seenFiles = new Set();
+    const seenFiles = new Set();
+    matchingSongs = matchingSongs.filter(song => {
+        if (!song.file) return false;
+        if (seenFiles.has(song.file)) return false;
+        seenFiles.add(song.file);
+        return true;
+    });
 
-        matchingSongs = matchingSongs.filter(song => {
 
-            if (!song.file) return false;
+    /* ==================================================
+        SET PANEL TITLE & CLEAR LIST
+    ================================================== */
 
-            if (seenFiles.has(song.file)) {
-                return false;
+    title.textContent = massCategoryName
+        ? `Canti: ${massCategoryName}`
+        : "Canti";
+
+    songList.innerHTML = "";
+
+    if (!matchingSongs.length) {
+        const empty = document.createElement("p");
+        empty.className = "mass-song-empty";
+        empty.textContent = "Nessun canto trovato in questa categoria.";
+        songList.appendChild(empty);
+    }
+
+
+    /* ==================================================
+        CREATE SONG ITEMS
+    ================================================== */
+
+    matchingSongs.forEach(song => {
+
+        const item = document.createElement("button");
+
+        item.type = "button";
+        item.className = "mass-song-item";
+
+        const name = document.createElement("span");
+        name.className = "mass-song-name";
+        name.textContent = song.title || "Canto senza titolo";
+
+        item.appendChild(name);
+
+
+/* ==============================================
+            OPEN THE SELECTED SONG
+        ============================================== */
+
+        item.addEventListener("click", () => {
+
+            if (!song.file) return;
+
+            sessionStorage.setItem(
+                "massGuideScrollPosition",
+                String(window.scrollY)
+            );
+
+            const isPDF =
+                song.type === "pdf" ||
+                /\.pdf(?:$|[?#])/i.test(song.file);
+
+            const viewer = isPDF
+                ? "pdf-songbook-viewer.html"
+                : "songbook-viewer.html";
+
+            const viewerURL =
+                viewer + "?file=" +
+                encodeURIComponent(song.file);
+
+
+            /* 
+                1. Close the song list panel modal cleanly
+            */
+            closeSongPanel();
+
+
+            /* 
+                2. Open the viewer on top using the parent overlay stack
+            */
+            if (window.parent && typeof window.parent.openPageOverlay === "function") {
+                window.parent.openPageOverlay(viewerURL);
+            } else if (typeof openPageOverlay === "function") {
+                openPageOverlay(viewerURL);
+            } else {
+                console.error("openPageOverlay() was not found.");
             }
 
-            seenFiles.add(song.file);
-
-            return true;
         });
 
-
-        /* ==================================================
-           SET PANEL TITLE
-        ================================================== */
-
-        title.textContent = massCategoryName
-            ? `Canti: ${massCategoryName}`
-            : "Canti";
-
-
-        /* ==================================================
-           CLEAR PREVIOUS RESULTS
-        ================================================== */
-
-        songList.innerHTML = "";
-
-
-        /* ==================================================
-           SHOW EMPTY STATE
-        ================================================== */
-
-        if (!matchingSongs.length) {
-
-            const empty = document.createElement("p");
-
-            empty.className = "mass-song-empty";
-
-            empty.textContent =
-                "Nessun canto trovato in questa categoria.";
-
-            songList.appendChild(empty);
-        }
-
-
-        /* ==================================================
-           CREATE SONG ITEMS
-        ================================================== */
-
-        matchingSongs.forEach(song => {
-
-            const item = document.createElement("button");
-
-            item.type = "button";
-            item.className = "mass-song-item";
-
-            const name = document.createElement("span");
-
-            name.className = "mass-song-name";
-            name.textContent = song.title || "Canto senza titolo";
-
-            item.appendChild(name);
-
-
-            /* ==============================================
-               OPEN THE SELECTED SONG
-            ============================================== */
-
-            item.addEventListener("click", () => {
-
-                if (!song.file) return;
-
-                sessionStorage.setItem(
-                    "massGuideScrollPosition",
-                    String(window.scrollY)
-                );
-
-                const isPDF =
-                    song.type === "pdf" ||
-                    /\.pdf(?:$|[?#])/i.test(song.file);
-
-                const viewer = isPDF
-                    ? "pdf-songbook-viewer.html"
-                    : "songbook-viewer.html";
-
-                const viewerURL =
-                    viewer + "?file=" +
-                    encodeURIComponent(song.file);
-
-
-                /*
-                 * Close the song list, then open the selected
-                 * viewer using the existing full-screen overlay.
-                 */
-
-                overlay.classList.remove("show");
-
-                document.body.classList.remove("mass-song-open");
-
-                massSongOpen = false;
-
-                history.back();
-
-                setTimeout(() => {
-
-                    if (typeof openPageOverlay === "function") {
-
-                        openPageOverlay(viewerURL);
-
-                    } else {
-
-                        console.error(
-                            "openPageOverlay() was not found. " +
-                            "Check overlay.js."
-                        );
-
-                    }
-
-                }, 100);
-
-            });
-
-            songList.appendChild(item);
-
-        });
-
-
-        /* ==================================================
-           SHOW PANEL
-        ================================================== */
-
-        history.pushState(
-            { massSongPanel: true },
-            "",
-            window.location.href
-        );
-
-        massSongOpen = true;
-
-        overlay.classList.add("show");
-
-        document.body.classList.add("mass-song-open");
-    }
-
-
-    /* ======================================================
-       CLOSE PANEL
-    ====================================================== */
-
-    function closeSongPanel() {
-
-        overlay.classList.remove("show");
-
-        document.body.classList.remove("mass-song-open");
-
-        massSongOpen = false;
-    }
-
-
-    /* ======================================================
-       BROWSER BACK / ANDROID BACK
-    ====================================================== */
-
-    window.addEventListener("popstate", () => {
-
-        if (massSongOpen) {
-            closeSongPanel();
-        }
+        songList.appendChild(item);
 
     });
 
 
+    /* ==================================================
+        SHOW PANEL & HIDE MAIN OVERLAY CLOSE BUTTON
+    ================================================== */
+
+    massSongOpen = true;
+    overlay.classList.add("show");
+    document.body.classList.add("mass-song-open");
+
+    if (window.parent && typeof window.parent.hideMainOverlayClose === "function") {
+        window.parent.hideMainOverlayClose();
+    }
+}
+
+
+/* ======================================================
+    CLOSE PANEL
+====================================================== */
+
+function closeSongPanel() {
+    if (!massSongOpen) return;
+    overlay.classList.remove("show");
+    document.body.classList.remove("mass-song-open");
+    massSongOpen = false;
+
+    if (window.parent && typeof window.parent.showMainOverlayClose === "function") {
+        window.parent.showMainOverlayClose();
+    }
+}
+
+
     /* ======================================================
-       CLOSE BUTTON
+        CLOSE BUTTON & TAP OUTSIDE & ESC KEY
     ====================================================== */
 
     closeButton.addEventListener("click", () => {
-
-        if (massSongOpen) {
-            history.back();
-        }
-
+        closeSongPanel();
     });
-
-
-    /* ======================================================
-       TAP OUTSIDE PANEL
-    ====================================================== */
 
     overlay.addEventListener("click", event => {
-
-        if (event.target === overlay && massSongOpen) {
-            history.back();
+        if (event.target === overlay) {
+            closeSongPanel();
         }
-
     });
 
-
-    /* ======================================================
-       ESC KEY
-    ====================================================== */
-
     document.addEventListener("keydown", event => {
-
         if (event.key === "Escape" && massSongOpen) {
-            history.back();
+            closeSongPanel();
         }
-
     });
 
 
@@ -587,9 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ====================================================== */
 
     songButtons.forEach(button => {
-
         button.addEventListener("click", event => {
-
             event.preventDefault();
 
             const category = button.dataset.songCategory || "";
@@ -599,7 +445,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             openSongPanel(category, section);
         });
-
     });
 
 });

@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* ==========================================================
@@ -8,7 +7,7 @@
    - Index remains the base page.
    - New pages open above existing pages.
    - Closing removes only the topmost page.
-   - No browser-history manipulation.
+   - Browser back button / swipe gestures close the topmost page.
 ========================================================== */
 
 
@@ -43,7 +42,6 @@ function updateOverlayStack() {
 
     const hasOverlays = overlayStack.length > 0;
     const topIndex = overlayStack.length - 1;
-    const topOverlay = overlayStack[topIndex];
 
     pageOverlay.classList.toggle("active", hasOverlays);
     pageOverlay.setAttribute("aria-hidden", String(!hasOverlays));
@@ -58,11 +56,18 @@ function updateOverlayStack() {
         item.frame.style.visibility = isTop ? "visible" : "hidden";
         item.frame.style.pointerEvents = isTop ? "auto" : "none";
         item.frame.setAttribute("aria-hidden", String(!isTop));
+
+        // Notify iframe layer of its visibility state (fixes the tuner bug)
+        try {
+            if (item.frame.contentWindow && typeof item.frame.contentWindow.handleLayerVisibility === "function") {
+                item.frame.contentWindow.handleLayerVisibility(isTop);
+            }
+        } catch (e) {}
     });
 
     if (pageOverlayClose) {
-    pageOverlayClose.style.display = hasOverlays ? "flex" : "none";
-}
+        pageOverlayClose.style.display = hasOverlays ? "flex" : "none";
+    }
 }
 
 
@@ -90,9 +95,13 @@ function openPageOverlay(url) {
      * Keep all existing frames alive.
      * The new frame becomes the topmost layer.
      */
-
     overlayStack.push(item);
     pageOverlay.appendChild(frame);
+
+    // Push history state so browser back button / swipe gesture closes the overlay
+    if (typeof history.pushState === "function") {
+        history.pushState({ overlayOpen: true }, "", window.location.href);
+    }
 
     updateOverlayStack();
 
@@ -108,11 +117,6 @@ function closePageOverlay() {
     if (!pageOverlay || overlayStack.length === 0) return;
 
     const item = overlayStack.pop();
-
-    /*
-     * Remove only the topmost frame.
-     * Previous frames remain loaded underneath.
-     */
 
     item.frame.src = "about:blank";
     item.frame.remove();
@@ -146,6 +150,35 @@ if (pageOverlayClose) {
         closePageOverlay();
     });
 }
+
+
+/* ==========================================================
+   BROWSER BACK BUTTON / SWIPE GESTURE SUPPORT
+========================================================== */
+
+window.addEventListener("popstate", function (event) {
+    if (overlayStack.length > 0) {
+        // Close only the topmost overlay layer (matches the '×' button action)
+        closePageOverlay();
+    }
+});
+
+
+/* ==========================================================
+   HELPER FUNCTIONS FOR IFRAMES (e.g., Mass Song Panel)
+========================================================== */
+
+window.hideMainOverlayClose = function() {
+    if (pageOverlayClose) {
+        pageOverlayClose.style.display = "none";
+    }
+};
+
+window.showMainOverlayClose = function() {
+    if (pageOverlayClose && overlayStack.length > 0) {
+        pageOverlayClose.style.display = "flex";
+    }
+};
 
 
 /* ==========================================================

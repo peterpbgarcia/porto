@@ -1013,3 +1013,18 @@ if (microphoneStatus) {
     microphoneStatus.textContent =
         "Press Start Tuner to begin";
 }
+
+
+
+window.handleLayerVisibility = async function (isTop) {
+    if (!isTop) {
+        if (isRunning) {
+            await stopTuner();
+        }
+    } else {
+        resetDisplay();
+        if (microphoneStatus) {
+            microphoneStatus.textContent = "Press Start Tuner to begin";
+        }
+    }
+};

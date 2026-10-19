@@ -3,7 +3,7 @@
    SERVICE WORKER
 ========================================== */
 
-const CACHE_NAME = "compendio-v9.0.8";
+const CACHE_NAME = "compendio-v9.0.10";
 const UPDATE_CACHE_NAME = CACHE_NAME + "-update";
 
 /* ==========================================
