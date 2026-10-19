@@ -1,21 +1,27 @@
-
 @echo off
-title Compendio - Update Service Worker
-cd /d "%~dp0"
+setlocal
+title Compendio di Preghiere - Service Worker Updater
 
-echo.
 echo ==========================================
 echo   COMPENDIO - SERVICE WORKER UPDATE
 echo ==========================================
 echo.
-echo Working folder:
-echo %CD%
-echo.
+
+cd /d "%~dp0"
+
+if not exist "service-worker.js" (
+    echo ERROR: service-worker.js not found!
+    pause
+    exit /b 1
+)
+
+if not exist "update-service-worker.ps1" (
+    echo ERROR: update-service-worker.ps1 not found!
+    pause
+    exit /b 1
+)
 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0update-service-worker.ps1"
 
 echo.
-echo ==========================================
-echo BAT finished.
-echo ==========================================
 pause
