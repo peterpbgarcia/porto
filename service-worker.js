@@ -4,7 +4,7 @@
 ========================================== */
 
 
-const CACHE_NAME = "compendio-v9.0.4";
+const CACHE_NAME = "compendio-v9.0.6";
 
 const UPDATE_CACHE_NAME =
     CACHE_NAME + "-update";
@@ -247,7 +247,6 @@ const APP_FILES = [
     "/pdfjs/web/viewer.js",
     "/pdf-songbook-viewer.html",
     "/rosary.html",
-    "/service-worker.js.backup",
     "/sesta-nona.html",
     "/songbook.html",
     "/songbook/01 Ingresso/1. Acclamate al Signore.htm",
