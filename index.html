@@ -144,35 +144,9 @@
                     .catch(err => console.error("Service Worker registration failed:", err));
             });
         }
-
-
-document.addEventListener('deviceready', function() {
-    if (window.plugins && window.plugins.permissions) {
-        const permissions = window.plugins.permissions;
-        
-        // Check if we already have microphone permission
-        permissions.hasPermission("android.permission.RECORD_AUDIO", function(status) {
-            if (!status.hasPermission) {
-                // If not, prompt the user right away when the app opens
-                permissions.requestPermission("android.permission.RECORD_AUDIO", 
-                    function(status) {
-                        console.log("Microphone permission granted:", status.hasPermission);
-                    }, 
-                    function(err) {
-                        console.warn("Microphone permission error:", err);
-                    }
-                );
-            }
-        }, null);
-    }
-}, false);
-        
     </script>
     <script src="js/app.js"></script>
     <script src="js/overlay.js"></script>
-
-
-
 
 </body>
 </html>
