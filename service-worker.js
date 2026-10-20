@@ -3,7 +3,7 @@
    SERVICE WORKER
 ========================================== */
 
-const CACHE_NAME = "compendio-v9.0.12";
+const CACHE_NAME = "compendio-v9.0.11";
 const UPDATE_CACHE_NAME = CACHE_NAME + "-update";
 
 /* ==========================================
@@ -13,7 +13,6 @@ const UPDATE_CACHE_NAME = CACHE_NAME + "-update";
 const APP_FILES = [
     "adoration.html",
     "angelus.html",
-    "app-config.json",
     "assets/icon.png",
     "basic-prayers.html",
     "css/guitar-tuner.css",
