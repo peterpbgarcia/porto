@@ -72,23 +72,46 @@ function updateOverlayStack() {
 
 
 /* ==========================================================
-   OPEN A NEW OVERLAY
+   OPEN A NEW OVERLAY (WITH ANDROID PERMISSION BRIDGE)
 ========================================================== */
 
 function openPageOverlay(url) {
     if (!pageOverlay || !url) return;
 
+    const targetUrl = String(url);
+    const isTuner = targetUrl.toLowerCase().includes("tuner");
+
+    // If opening the guitar tuner on Android, request permission natively first
+    if (isTuner && window.cordova && window.plugins && window.plugins.permissions) {
+        const permissions = window.plugins.permissions;
+        permissions.requestPermission(
+            permissions.RECORD_AUDIO,
+            function(status) {
+                proceedToOpenOverlay(targetUrl);
+            },
+            function(err) {
+                console.warn("Android permission request failed:", err);
+                proceedToOpenOverlay(targetUrl);
+            }
+        );
+        return;
+    }
+
+    proceedToOpenOverlay(targetUrl);
+}
+
+function proceedToOpenOverlay(url) {
     const frame = document.createElement("iframe");
 
     frame.className = "page-overlay-frame";
     frame.title = "Contenuto";
-    frame.setAttribute("allow", "microphone");
+    frame.setAttribute("allow", "microphone; camera; midi; encrypted-media");
     frame.setAttribute("allowfullscreen", "");
     frame.setAttribute("loading", "eager");
 
     const item = {
         frame: frame,
-        url: String(url)
+        url: url
     };
 
     /*
