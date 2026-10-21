@@ -36,12 +36,12 @@ const GUITAR_STRINGS = [
     { note: "E4", frequency: 329.63, index: 5 }
 ];
 
-const FFT_SIZE = 8192;
+const FFT_SIZE = 2048; // Reduced from 8192 to prevent buffer-lag and clock skew on Android APKs
 const MIN_FREQUENCY = 65;
 const MAX_FREQUENCY = 400;
-const MIN_CONFIDENCE = 0.65;
+const MIN_CONFIDENCE = 0.60; // Lowered slightly to maintain sensitivity on mobile mic streams
 const MAX_CENTS = 50;
-const HISTORY_SIZE = 7;
+const HISTORY_SIZE = 5;      // Shortened history depth for faster mobile response
 const IN_TUNE_ENTER = 5;
 const IN_TUNE_EXIT = 10;
 
