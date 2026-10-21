@@ -22,7 +22,7 @@ const GUITAR_STRINGS = [
     { note: "E4", frequency: 329.63, index: 5 }
 ];
 
-const FFT_SIZE = 4096; // Universal mobile-safe size (power of two)
+const FFT_SIZE = 4096;
 const MIN_FREQUENCY = 65;
 const MAX_FREQUENCY = 400;
 const MIN_CONFIDENCE = 0.60;
@@ -75,6 +75,9 @@ let smoothedFrequency = null;
 let lastDetectedString = null;
 let inTune = false;
 let stableFrames = 0;
+
+let autoLockedString = null;
+let silenceFrames = 0;
 
 let timeDomainBuffer = null;
 let spectrumBuffer = null;
@@ -195,7 +198,7 @@ function detectPitchYIN(buffer, sampleRate) {
             : 1;
     }
 
-    const threshold = 0.10; // Stricter threshold for mobile harmonic isolation
+    const threshold = 0.10;
     let candidateTau = -1;
 
     for (let tau = minTau; tau <= maxTau; tau++) {
@@ -270,7 +273,7 @@ function verifyPitch(candidate) {
 
     let frequency = candidate.frequency;
 
-    if (lastFrequency !== null) {
+    if (lastFrequency !== null && candidate.confidence > 0.75) {
         const ratio = frequency / lastFrequency;
 
         if (ratio > 1.85 && ratio < 2.15) {
@@ -295,7 +298,7 @@ function verifyPitch(candidate) {
 
 
 /* ==========================================================
-   STRING DETECTION (GEOMETRIC MIDPOINT BOUNDARIES)
+   STRING DETECTION WITH AUTO-LOCK
 ========================================================== */
 
 function findNearestString(frequency) {
@@ -336,27 +339,22 @@ function detectString(frequency) {
         if (cents <= 100) return lockedString;
     }
 
-    // Precise geometric logarithmic zone boundaries for all 6 strings
-    if (frequency < 95.2) {
-        return GUITAR_STRINGS.find(s => s.note === "E2");
-    }
-    if (frequency < 127.1) {
-        return GUITAR_STRINGS.find(s => s.note === "A2");
-    }
-    if (frequency < 169.5) {
-        return GUITAR_STRINGS.find(s => s.note === "D3");
-    }
-    if (frequency < 220.1) {
-        return GUITAR_STRINGS.find(s => s.note === "G3");
-    }
-    if (frequency < 285.3) {
-        return GUITAR_STRINGS.find(s => s.note === "B3");
-    }
-    if (frequency <= 360.0) {
-        return GUITAR_STRINGS.find(s => s.note === "E4");
+    if (autoLockedString) {
+        const centsFromLock = Math.abs(
+            frequencyToCents(frequency, autoLockedString.frequency)
+        );
+        if (centsFromLock < 300) {
+            return autoLockedString;
+        } else {
+            autoLockedString = null;
+        }
     }
 
-    return findNearestString(frequency);
+    const nearest = findNearestString(frequency);
+    if (nearest) {
+        autoLockedString = nearest;
+    }
+    return nearest;
 }
 
 
@@ -365,7 +363,7 @@ function detectString(frequency) {
 ========================================================== */
 
 function filterFrequency(frequency) {
-    if (!Number.isFinite(frequency) || frequency <= 0) {
+    if (!Number.isFinite(frequency) || frequency <= MIN_FREQUENCY || frequency > MAX_FREQUENCY) {
         return null;
     }
 
@@ -377,16 +375,20 @@ function filterFrequency(frequency) {
 
     const medianFrequency = median(frequencyHistory);
 
-    if (medianFrequency === null) return null;
+    if (!Number.isFinite(medianFrequency) || medianFrequency <= 0) return null;
 
-    if (smoothedFrequency === null) {
+    if (smoothedFrequency === null || !Number.isFinite(smoothedFrequency) || smoothedFrequency <= 0) {
         smoothedFrequency = medianFrequency;
     } else {
         const alpha = 0.35;
-        smoothedFrequency = Math.exp(
-            Math.log(smoothedFrequency) * (1 - alpha) +
-            Math.log(medianFrequency) * alpha
-        );
+        const logSmoothed = Math.log(smoothedFrequency);
+        const logMedian = Math.log(medianFrequency);
+
+        if (Number.isFinite(logSmoothed) && Number.isFinite(logMedian)) {
+            smoothedFrequency = Math.exp(logSmoothed * (1 - alpha) + logMedian * alpha);
+        } else {
+            smoothedFrequency = medianFrequency;
+        }
     }
 
     lastFrequency = smoothedFrequency;
@@ -394,12 +396,15 @@ function filterFrequency(frequency) {
 }
 
 function resetFrequencyHistory() {
-    frequencyHistory = [];
+    frequencyHistory.length = 0;
     lastFrequency = null;
     smoothedFrequency = null;
     lastDetectedString = null;
+    autoLockedString = null;
+    silenceFrames = 0;
     stableFrames = 0;
     inTune = false;
+    lastValidDetection = 0;
 }
 
 
@@ -614,6 +619,10 @@ function selectString(note, frequency) {
 function detectionLoop() {
     if (!isRunning || isClosing || !analyser) return;
 
+    if (audioContext && audioContext.state === "suspended") {
+        audioContext.resume().catch(() => {});
+    }
+
     const now = performance.now();
 
     if (now - lastUiUpdate >= 35) {
@@ -623,19 +632,17 @@ function detectionLoop() {
         const verified = verifyPitch(candidate);
 
         if (verified) {
+            silenceFrames = 0;
             const frequency = filterFrequency(verified.frequency);
 
             if (frequency !== null) {
                 const guitarString = detectString(frequency);
 
                 if (guitarString) {
-                    if (lastDetectedString === guitarString.note) {
-                        stableFrames++;
-                    } else {
+                    if (lastDetectedString !== guitarString.note) {
                         lastDetectedString = guitarString.note;
-                        stableFrames = 0;
                         inTune = false;
-                        frequencyHistory = []; // Reset history smoothly on string change
+                        frequencyHistory.length = 0;
                     }
 
                     lastValidDetection = now;
@@ -645,16 +652,23 @@ function detectionLoop() {
                         microphoneStatus.textContent =
                             tuningMode === "manual"
                                 ? `Manual mode — ${guitarString.note}`
-                                : "Listening — pluck a string";
+                                : `Tuning ${guitarString.note}`;
                     }
                 }
             }
-        } else if (
-            lastValidDetection &&
-            now - lastValidDetection > 1200
-        ) {
-            if (microphoneStatus) {
-                microphoneStatus.textContent = "Listening — pluck a string";
+        } else {
+            silenceFrames++;
+            if (silenceFrames > 15) {
+                autoLockedString = null;
+            }
+
+            if (
+                lastValidDetection &&
+                now - lastValidDetection > 1200
+            ) {
+                if (microphoneStatus) {
+                    microphoneStatus.textContent = "Listening — pluck a string";
+                }
             }
         }
     }
@@ -669,6 +683,11 @@ function detectionLoop() {
 
 async function startTuner() {
     if (isRunning || isStarting || isClosing) return;
+
+    if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
 
     if (!navigator.mediaDevices?.getUserMedia) {
         if (microphoneStatus) {
@@ -707,6 +726,15 @@ async function startTuner() {
                 googAutoGainControl: false,
                 googHighpassFilter: false
             }
+        });
+
+        requestedStream.getAudioTracks().forEach(track => {
+            track.addEventListener('ended', () => {
+                if (isRunning) stopTuner();
+            });
+            track.addEventListener('mute', () => {
+                console.warn("Microphone stream muted by system audio focus.");
+            });
         });
 
         if (isClosing || requestId !== startRequestId) {
@@ -968,6 +996,7 @@ window.handleLayerVisibility = async function (isTop) {
             await stopTuner();
         }
     } else {
+        resetFrequencyHistory();
         resetDisplay();
         if (microphoneStatus) {
             microphoneStatus.textContent = "Press Start Tuner to begin";
