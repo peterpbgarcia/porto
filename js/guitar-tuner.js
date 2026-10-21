@@ -760,7 +760,14 @@ try {
             throw new Error("AudioContext is not supported.");
         }
 
-        requestedContext = new AudioContextClass();
+        // Explicitly pass sampleRate options to prevent Android WebView resampling skew
+        requestedContext = new AudioContextClass({
+            latencyHint: "interactive"
+        });
+
+        if (requestedContext.sampleRate) {
+            console.log("AudioContext active sample rate: ", requestedContext.sampleRate);
+        }
 
         if (requestedContext.state === "suspended") {
             await requestedContext.resume();
