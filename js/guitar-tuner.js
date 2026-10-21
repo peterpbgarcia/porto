@@ -1,4 +1,3 @@
-
 "use strict";
 
 /* ==========================================================
@@ -36,12 +35,12 @@ const GUITAR_STRINGS = [
     { note: "E4", frequency: 329.63, index: 5 }
 ];
 
-const FFT_SIZE = 2048; // Reduced from 8192 to prevent buffer-lag and clock skew on Android APKs
+const FFT_SIZE = 4096; // Universal mobile-safe size (power of two)
 const MIN_FREQUENCY = 65;
 const MAX_FREQUENCY = 400;
-const MIN_CONFIDENCE = 0.60; // Lowered slightly to maintain sensitivity on mobile mic streams
+const MIN_CONFIDENCE = 0.60;
 const MAX_CENTS = 50;
-const HISTORY_SIZE = 5;      // Shortened history depth for faster mobile response
+const HISTORY_SIZE = 5;
 const IN_TUNE_ENTER = 5;
 const IN_TUNE_EXIT = 10;
 
@@ -142,23 +141,13 @@ function getNoteParts(note) {
 }
 
 function getFrequencyFromBuffer() {
-    if (!analyser || !timeDomainBuffer) return null;
+    if (!analyser || !timeDomainBuffer || !audioContext) return null;
 
     analyser.getFloatTimeDomainData(timeDomainBuffer);
 
-    // Android APK WebView fix: Some Android devices force an internal 16kHz or 22.05kHz 
-    // clock rate on MediaStreamSources while reporting a nominal 44.1kHz/48kHz sampleRate, 
-    // skewing pitch calculations. We normalize if an Android clock mismatch occurs.
-    let effectiveSampleRate = audioContext.sampleRate;
-    
-    // If running in an Android environment where sample rate reporting mismatches hardware frame processing
-    if (effectiveSampleRate && effectiveSampleRate < 32000) {
-        effectiveSampleRate = 44100; // Force standard audio track mapping if restricted
-    }
-
     return detectPitchYIN(
         timeDomainBuffer,
-        effectiveSampleRate
+        audioContext.sampleRate
     );
 }
 
@@ -737,7 +726,7 @@ async function startTuner() {
     let requestedStream = null;
     let requestedContext = null;
 
-try {
+    try {
         requestedStream = await navigator.mediaDevices.getUserMedia({
             audio: {
                 echoCancellation: false,
@@ -770,14 +759,8 @@ try {
             throw new Error("AudioContext is not supported.");
         }
 
-        // Explicitly pass sampleRate options to prevent Android WebView resampling skew
-        requestedContext = new AudioContextClass({
-            latencyHint: "interactive"
-        });
-
-        if (requestedContext.sampleRate) {
-            console.log("AudioContext active sample rate: ", requestedContext.sampleRate);
-        }
+        // Standard robust initialization for mobile/Android WebViews
+        requestedContext = new AudioContextClass();
 
         if (requestedContext.state === "suspended") {
             await requestedContext.resume();
