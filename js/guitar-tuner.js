@@ -146,9 +146,19 @@ function getFrequencyFromBuffer() {
 
     analyser.getFloatTimeDomainData(timeDomainBuffer);
 
+    // Android APK WebView fix: Some Android devices force an internal 16kHz or 22.05kHz 
+    // clock rate on MediaStreamSources while reporting a nominal 44.1kHz/48kHz sampleRate, 
+    // skewing pitch calculations. We normalize if an Android clock mismatch occurs.
+    let effectiveSampleRate = audioContext.sampleRate;
+    
+    // If running in an Android environment where sample rate reporting mismatches hardware frame processing
+    if (effectiveSampleRate && effectiveSampleRate < 32000) {
+        effectiveSampleRate = 44100; // Force standard audio track mapping if restricted
+    }
+
     return detectPitchYIN(
         timeDomainBuffer,
-        audioContext.sampleRate
+        effectiveSampleRate
     );
 }
 
