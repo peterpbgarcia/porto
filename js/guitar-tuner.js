@@ -208,7 +208,7 @@ function detectPitchYIN(buffer, sampleRate) {
             : 1;
     }
 
-const threshold = 0.10; // Stricter threshold forces YIN to pick the true fundamental period
+    const threshold = 0.10; // Stricter threshold forces YIN to pick the true fundamental period
     let candidateTau = -1;
 
     for (let tau = minTau; tau <= maxTau; tau++) {
