@@ -334,10 +334,13 @@ function findNearestString(frequency) {
     return nearest;
 }
 
-// Keep track of how many consecutive frames a new string has been detected
-let candidateString = null;
-let candidateFrames = 0;
-const REQUIRED_STABLE_FRAMES = 3; // Must be stable for 3 detection loops before switching strings
+/* ==========================================================
+   STRING DETECTION WITH STABLE HYSTERESIS
+========================================================== */
+
+let autoCandidateNote = null;
+let autoCandidateCount = 0;
+const AUTO_SWITCH_THRESHOLD = 3; // Demands 3 consistent reads to switch strings in Auto mode
 
 function detectString(frequency) {
     if (tuningMode === "manual" && selectedString) {
@@ -355,40 +358,41 @@ function detectString(frequency) {
         if (cents <= 100) return lockedString;
     }
 
-    // Direct check for E2 / E4 boundary safety on mobile mics
-    let detected = null;
+    // Direct check to prevent E2 / E4 boundary bleeding on mobile mics
+    let rawString = null;
     if (frequency > 290 && frequency < 360) {
-        detected = GUITAR_STRINGS.find(s => s.note === "E4");
+        rawString = GUITAR_STRINGS.find(s => s.note === "E4");
     } else if (frequency > 75 && frequency < 90) {
-        detected = GUITAR_STRINGS.find(s => s.note === "E2");
+        rawString = GUITAR_STRINGS.find(s => s.note === "E2");
     } else {
-        detected = findNearestString(frequency);
+        rawString = findNearestString(frequency);
     }
 
-    if (!detected) return lastDetectedString ? GUITAR_STRINGS.find(s => s.note === lastDetectedString) : null;
-
-    // Hysteresis check: prevent erratic jumping between strings
-    if (lastDetectedString === detected.note) {
-        candidateString = null;
-        candidateFrames = 0;
-        return detected;
+    if (!rawString) {
+        return lastDetectedString ? GUITAR_STRINGS.find(s => s.note === lastDetectedString) : null;
     }
 
-    if (candidateString === detected.note) {
-        candidateFrames++;
-        if (candidateFrames >= REQUIRED_STABLE_FRAMES) {
-            lastDetectedString = detected.note;
-            candidateString = null;
-            candidateFrames = 0;
-            return detected;
+    // Auto-detect hysteresis: ignore single-frame harmonic glitches
+    if (!lastDetectedString || lastDetectedString === rawString.note) {
+        autoCandidateNote = null;
+        autoCandidateCount = 0;
+        return rawString;
+    }
+
+    if (autoCandidateNote === rawString.note) {
+        autoCandidateCount++;
+        if (autoCandidateCount >= AUTO_SWITCH_THRESHOLD) {
+            autoCandidateNote = null;
+            autoCandidateCount = 0;
+            return rawString;
         }
     } else {
-        candidateString = detected.note;
-        candidateFrames = 1;
+        autoCandidateNote = rawString.note;
+        autoCandidateCount = 1;
     }
 
-    // Return the currently active stable string while the new one is being verified
-    return lastDetectedString ? GUITAR_STRINGS.find(s => s.note === lastDetectedString) : detected;
+    // Maintain the active string while verifying the candidate
+    return GUITAR_STRINGS.find(s => s.note === lastDetectedString) || rawString;
 }
 
 
