@@ -1,7 +1,7 @@
 {
   "appName": "Compendio",
   "packageName": "com.compendiofsmi.app",
-  "statusBarColor": "#3498db",
+  "statusBarColor": "#4AAEE8)",
   "iconPath": "icons/logo.png",
   "splashScreen": true,
   "splashImagePath": "icons/logo.png",

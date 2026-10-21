@@ -39,11 +39,11 @@ const GUITAR_STRINGS = [
 const FFT_SIZE = 8192;
 const MIN_FREQUENCY = 65;
 const MAX_FREQUENCY = 400;
-const MIN_CONFIDENCE = 0.72;
+const MIN_CONFIDENCE = 0.65;
 const MAX_CENTS = 50;
 const HISTORY_SIZE = 7;
-const IN_TUNE_ENTER = 3;
-const IN_TUNE_EXIT = 6;
+const IN_TUNE_ENTER = 5;
+const IN_TUNE_EXIT = 10;
 
 
 /* ==========================================================
@@ -286,30 +286,24 @@ function verifyPitch(candidate) {
     let frequency = candidate.frequency;
 
     /*
-     * Reject abrupt octave jumps when the previous reading
-     * is stable. Allow a new note when the signal changes
-     * consistently across several frames.
+     * Only check immediate frame-to-frame octave jumps (2x / 0.5x).
+     * Removed dangerous multi-octave dividers (3x/4x) that break 
+     * legitimate jumps between Low E and High E / B strings.
      */
-
     if (lastFrequency !== null) {
         const ratio = frequency / lastFrequency;
 
+        // Check for sudden 2nd harmonic jump (~2x) within a single note
         if (ratio > 1.85 && ratio < 2.15) {
             const halfFrequency = frequency / 2;
-
-            if (
-                halfFrequency >= MIN_FREQUENCY &&
-                halfFrequency <= MAX_FREQUENCY
-            ) {
+            if (halfFrequency >= MIN_FREQUENCY && halfFrequency <= MAX_FREQUENCY) {
                 frequency = halfFrequency;
             }
-        } else if (ratio > 0.46 && ratio < 0.54) {
+        } 
+        // Check for sudden drop to half (~0.5x)
+        else if (ratio > 0.46 && ratio < 0.54) {
             const doubleFrequency = frequency * 2;
-
-            if (
-                doubleFrequency >= MIN_FREQUENCY &&
-                doubleFrequency <= MAX_FREQUENCY
-            ) {
+            if (doubleFrequency >= MIN_FREQUENCY && doubleFrequency <= MAX_FREQUENCY) {
                 frequency = doubleFrequency;
             }
         }
@@ -320,7 +314,6 @@ function verifyPitch(candidate) {
         confidence: candidate.confidence
     };
 }
-
 
 /* ==========================================================
    STRING DETECTION
@@ -382,8 +375,9 @@ function filterFrequency(frequency) {
             frequencyToCents(frequency, lastFrequency)
         );
 
-        // Reject isolated large jumps as outliers.
-        if (centsJump > 450 && stableFrames > 1) {
+        // Reject isolated large jumps as outliers (increased from 450 to 750 
+        // to accommodate ~500-cent gaps between adjacent guitar strings).
+        if (centsJump > 750 && stableFrames > 1) {
             return null;
         }
     }
@@ -648,6 +642,17 @@ function detectionLoop() {
         const verified = verifyPitch(candidate);
 
         if (verified) {
+            const guitarStringBeforeFilter = detectString(verified.frequency);
+
+            // CRITICAL FIX: If the raw detected string changes, 
+            // flush the history immediately so old string data doesn't poison the new string.
+            if (guitarStringBeforeFilter && lastDetectedString !== guitarStringBeforeFilter.note) {
+                frequencyHistory = [];
+                lastFrequency = null;
+                smoothedFrequency = null;
+                stableFrames = 0;
+            }
+
             const frequency = filterFrequency(verified.frequency);
 
             if (frequency !== null) {
@@ -688,7 +693,6 @@ function detectionLoop() {
 
     animationFrame = requestAnimationFrame(detectionLoop);
 }
-
 
 /* ==========================================================
    START TUNER
