@@ -5,6 +5,7 @@
    Compendio di Preghiere 9.0
 
    Standard tuning: A4 = 440 Hz
+   Optimized for Android WebView / Cordova APKs
 ========================================================== */
 
 
@@ -21,7 +22,7 @@ const GUITAR_STRINGS = [
     { note: "E4", frequency: 329.63, index: 5 }
 ];
 
-const FFT_SIZE = 4096;
+const FFT_SIZE = 4096; // Universal mobile-safe size (power of two)
 const MIN_FREQUENCY = 65;
 const MAX_FREQUENCY = 400;
 const MIN_CONFIDENCE = 0.60;
@@ -194,7 +195,7 @@ function detectPitchYIN(buffer, sampleRate) {
             : 1;
     }
 
-    const threshold = 0.10;
+    const threshold = 0.10; // Stricter threshold for mobile harmonic isolation
     let candidateTau = -1;
 
     for (let tau = minTau; tau <= maxTau; tau++) {
@@ -294,7 +295,7 @@ function verifyPitch(candidate) {
 
 
 /* ==========================================================
-   STRING DETECTION
+   STRING DETECTION (GEOMETRIC MIDPOINT BOUNDARIES)
 ========================================================== */
 
 function findNearestString(frequency) {
@@ -335,12 +336,24 @@ function detectString(frequency) {
         if (cents <= 100) return lockedString;
     }
 
-    // Direct boundary checks to prevent E2/E4 harmonic confusion on mobile mics
-    if (frequency > 280 && frequency < 360) {
-        return GUITAR_STRINGS.find(s => s.note === "E4");
-    }
-    if (frequency > 70 && frequency < 95) {
+    // Precise geometric logarithmic zone boundaries for all 6 strings
+    if (frequency < 95.2) {
         return GUITAR_STRINGS.find(s => s.note === "E2");
+    }
+    if (frequency < 127.1) {
+        return GUITAR_STRINGS.find(s => s.note === "A2");
+    }
+    if (frequency < 169.5) {
+        return GUITAR_STRINGS.find(s => s.note === "D3");
+    }
+    if (frequency < 220.1) {
+        return GUITAR_STRINGS.find(s => s.note === "G3");
+    }
+    if (frequency < 285.3) {
+        return GUITAR_STRINGS.find(s => s.note === "B3");
+    }
+    if (frequency <= 360.0) {
+        return GUITAR_STRINGS.find(s => s.note === "E4");
     }
 
     return findNearestString(frequency);
@@ -610,27 +623,30 @@ function detectionLoop() {
         const verified = verifyPitch(candidate);
 
         if (verified) {
-            const rawDetectedString = detectString(verified.frequency);
-
-            // Flush smoothing history only when physically switching strings
-            if (rawDetectedString && lastDetectedString !== rawDetectedString.note) {
-                frequencyHistory = [];
-                lastFrequency = null;
-                smoothedFrequency = null;
-                lastDetectedString = rawDetectedString.note;
-            }
-
             const frequency = filterFrequency(verified.frequency);
 
-            if (frequency !== null && rawDetectedString) {
-                lastValidDetection = now;
-                updateDisplay(frequency, rawDetectedString);
+            if (frequency !== null) {
+                const guitarString = detectString(frequency);
 
-                if (microphoneStatus) {
-                    microphoneStatus.textContent =
-                        tuningMode === "manual"
-                            ? `Manual mode — ${rawDetectedString.note}`
-                            : "Listening — pluck a string";
+                if (guitarString) {
+                    if (lastDetectedString === guitarString.note) {
+                        stableFrames++;
+                    } else {
+                        lastDetectedString = guitarString.note;
+                        stableFrames = 0;
+                        inTune = false;
+                        frequencyHistory = []; // Reset history smoothly on string change
+                    }
+
+                    lastValidDetection = now;
+                    updateDisplay(frequency, guitarString);
+
+                    if (microphoneStatus) {
+                        microphoneStatus.textContent =
+                            tuningMode === "manual"
+                                ? `Manual mode — ${guitarString.note}`
+                                : "Listening — pluck a string";
+                    }
                 }
             }
         } else if (
