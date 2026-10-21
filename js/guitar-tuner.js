@@ -350,6 +350,16 @@ function detectString(frequency) {
         if (cents <= 100) return lockedString;
     }
 
+    // Direct check to prevent E2 / E4 and D3 octave bleeding on mobile mics
+    if (frequency > 290 && frequency < 360) {
+        // If it's near High E4, ensure it maps to E4 and never confuses with E2's harmonic
+        return GUITAR_STRINGS.find(s => s.note === "E4");
+    }
+    if (frequency > 75 && frequency < 90) {
+        // If it's near Low E2, ensure it maps to E2
+        return GUITAR_STRINGS.find(s => s.note === "E2");
+    }
+
     return findNearestString(frequency);
 }
 
