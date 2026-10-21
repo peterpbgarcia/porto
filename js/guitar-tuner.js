@@ -5,20 +5,6 @@
    Compendio di Preghiere 9.0
 
    Standard tuning: A4 = 440 Hz
-
-   Preserved interface:
-   - Existing HTML IDs and CSS classes
-   - Six standard guitar strings
-   - Automatic string detection
-   - Manual string selection and locking
-   - Frequency and cents display
-   - Tuning meter and in-tune status
-
-   Overlay lifecycle:
-   - No internal close button
-   - Clean up when the parent removes this iframe
-   - Stop microphone tracks when closing
-   - Handle closing while microphone permission is pending
 ========================================================== */
 
 
@@ -35,7 +21,7 @@ const GUITAR_STRINGS = [
     { note: "E4", frequency: 329.63, index: 5 }
 ];
 
-const FFT_SIZE = 4096; // Universal mobile-safe size (power of two)
+const FFT_SIZE = 4096;
 const MIN_FREQUENCY = 65;
 const MAX_FREQUENCY = 400;
 const MIN_CONFIDENCE = 0.60;
@@ -208,7 +194,7 @@ function detectPitchYIN(buffer, sampleRate) {
             : 1;
     }
 
-    const threshold = 0.10; // Stricter threshold forces YIN to pick the true fundamental period
+    const threshold = 0.10;
     let candidateTau = -1;
 
     for (let tau = minTau; tau <= maxTau; tau++) {
@@ -238,7 +224,6 @@ function detectPitchYIN(buffer, sampleRate) {
         if (lowest > 0.30) return null;
     }
 
-    // Parabolic interpolation improves frequency precision.
     const left = Math.max(minTau, candidateTau - 1);
     const right = Math.min(maxTau, candidateTau + 1);
 
@@ -287,7 +272,6 @@ function verifyPitch(candidate) {
     if (lastFrequency !== null) {
         const ratio = frequency / lastFrequency;
 
-        // Only correct frame-to-frame octave jumps (~2x) during an active pluck on the same string
         if (ratio > 1.85 && ratio < 2.15) {
             const halfFrequency = frequency / 2;
             if (halfFrequency >= MIN_FREQUENCY && halfFrequency <= MAX_FREQUENCY) {
@@ -307,6 +291,7 @@ function verifyPitch(candidate) {
         confidence: candidate.confidence
     };
 }
+
 
 /* ==========================================================
    STRING DETECTION
@@ -334,14 +319,6 @@ function findNearestString(frequency) {
     return nearest;
 }
 
-/* ==========================================================
-   STRING DETECTION WITH STABLE HYSTERESIS
-========================================================== */
-
-let autoCandidateNote = null;
-let autoCandidateCount = 0;
-const AUTO_SWITCH_THRESHOLD = 3; // Demands 3 consistent reads to switch strings in Auto mode
-
 function detectString(frequency) {
     if (tuningMode === "manual" && selectedString) {
         return selectedString;
@@ -358,41 +335,15 @@ function detectString(frequency) {
         if (cents <= 100) return lockedString;
     }
 
-    // Direct check to prevent E2 / E4 boundary bleeding on mobile mics
-    let rawString = null;
-    if (frequency > 290 && frequency < 360) {
-        rawString = GUITAR_STRINGS.find(s => s.note === "E4");
-    } else if (frequency > 75 && frequency < 90) {
-        rawString = GUITAR_STRINGS.find(s => s.note === "E2");
-    } else {
-        rawString = findNearestString(frequency);
+    // Direct boundary checks to prevent E2/E4 harmonic confusion on mobile mics
+    if (frequency > 280 && frequency < 360) {
+        return GUITAR_STRINGS.find(s => s.note === "E4");
+    }
+    if (frequency > 70 && frequency < 95) {
+        return GUITAR_STRINGS.find(s => s.note === "E2");
     }
 
-    if (!rawString) {
-        return lastDetectedString ? GUITAR_STRINGS.find(s => s.note === lastDetectedString) : null;
-    }
-
-    // Auto-detect hysteresis: ignore single-frame harmonic glitches
-    if (!lastDetectedString || lastDetectedString === rawString.note) {
-        autoCandidateNote = null;
-        autoCandidateCount = 0;
-        return rawString;
-    }
-
-    if (autoCandidateNote === rawString.note) {
-        autoCandidateCount++;
-        if (autoCandidateCount >= AUTO_SWITCH_THRESHOLD) {
-            autoCandidateNote = null;
-            autoCandidateCount = 0;
-            return rawString;
-        }
-    } else {
-        autoCandidateNote = rawString.note;
-        autoCandidateCount = 1;
-    }
-
-    // Maintain the active string while verifying the candidate
-    return GUITAR_STRINGS.find(s => s.note === lastDetectedString) || rawString;
+    return findNearestString(frequency);
 }
 
 
@@ -403,18 +354,6 @@ function detectString(frequency) {
 function filterFrequency(frequency) {
     if (!Number.isFinite(frequency) || frequency <= 0) {
         return null;
-    }
-
-    if (lastFrequency !== null) {
-        const centsJump = Math.abs(
-            frequencyToCents(frequency, lastFrequency)
-        );
-
-        // Reject isolated large jumps as outliers (increased from 450 to 750 
-        // to accommodate ~500-cent gaps between adjacent guitar strings).
-        if (centsJump > 750 && stableFrames > 1) {
-            return null;
-        }
     }
 
     frequencyHistory.push(frequency);
@@ -430,9 +369,7 @@ function filterFrequency(frequency) {
     if (smoothedFrequency === null) {
         smoothedFrequency = medianFrequency;
     } else {
-        // Smooth in log-frequency space for musical intervals.
         const alpha = 0.35;
-
         smoothedFrequency = Math.exp(
             Math.log(smoothedFrequency) * (1 - alpha) +
             Math.log(medianFrequency) * alpha
@@ -440,7 +377,6 @@ function filterFrequency(frequency) {
     }
 
     lastFrequency = smoothedFrequency;
-
     return smoothedFrequency;
 }
 
@@ -523,21 +459,18 @@ function updateDisplay(frequency, guitarString) {
     if (detectedOctave) detectedOctave.textContent = parts.octave;
 
     if (detectedFrequency) {
-        detectedFrequency.textContent =
-            `${frequency.toFixed(1)} Hz`;
+        detectedFrequency.textContent = `${frequency.toFixed(1)} Hz`;
     }
 
     if (centsDisplay) {
         const roundedCents = Math.round(cents);
         const sign = roundedCents > 0 ? "+" : "";
 
-        centsDisplay.textContent =
-            `${sign}${roundedCents} cents`;
+        centsDisplay.textContent = `${sign}${roundedCents} cents`;
     }
 
     updateMeter(cents);
 
-    // Hysteresis prevents the status flickering at the center.
     if (inTune) {
         if (Math.abs(cents) > IN_TUNE_EXIT) {
             inTune = false;
@@ -677,42 +610,27 @@ function detectionLoop() {
         const verified = verifyPitch(candidate);
 
         if (verified) {
-            const guitarStringBeforeFilter = detectString(verified.frequency);
+            const rawDetectedString = detectString(verified.frequency);
 
-            // CRITICAL FIX: If the raw detected string changes, 
-            // flush the history immediately so old string data doesn't poison the new string.
-            if (guitarStringBeforeFilter && lastDetectedString !== guitarStringBeforeFilter.note) {
+            // Flush smoothing history only when physically switching strings
+            if (rawDetectedString && lastDetectedString !== rawDetectedString.note) {
                 frequencyHistory = [];
                 lastFrequency = null;
                 smoothedFrequency = null;
-                stableFrames = 0;
+                lastDetectedString = rawDetectedString.note;
             }
 
             const frequency = filterFrequency(verified.frequency);
 
-            if (frequency !== null) {
-                const guitarString = detectString(frequency);
+            if (frequency !== null && rawDetectedString) {
+                lastValidDetection = now;
+                updateDisplay(frequency, rawDetectedString);
 
-                if (guitarString) {
-                    if (
-                        lastDetectedString === guitarString.note
-                    ) {
-                        stableFrames++;
-                    } else {
-                        lastDetectedString = guitarString.note;
-                        stableFrames = 0;
-                        inTune = false;
-                    }
-
-                    lastValidDetection = now;
-                    updateDisplay(frequency, guitarString);
-
-                    if (microphoneStatus) {
-                        microphoneStatus.textContent =
-                            tuningMode === "manual"
-                                ? `Manual mode — ${guitarString.note}`
-                                : "Listening — pluck a string";
-                    }
+                if (microphoneStatus) {
+                    microphoneStatus.textContent =
+                        tuningMode === "manual"
+                            ? `Manual mode — ${rawDetectedString.note}`
+                            : "Listening — pluck a string";
                 }
             }
         } else if (
@@ -720,14 +638,14 @@ function detectionLoop() {
             now - lastValidDetection > 1200
         ) {
             if (microphoneStatus) {
-                microphoneStatus.textContent =
-                    "Listening — pluck a string";
+                microphoneStatus.textContent = "Listening — pluck a string";
             }
         }
     }
 
     animationFrame = requestAnimationFrame(detectionLoop);
 }
+
 
 /* ==========================================================
    START TUNER
@@ -755,8 +673,7 @@ async function startTuner() {
     }
 
     if (microphoneStatus) {
-        microphoneStatus.textContent =
-            "Please allow microphone access.";
+        microphoneStatus.textContent = "Please allow microphone access.";
     }
 
     let requestedStream = null;
@@ -776,14 +693,7 @@ async function startTuner() {
             }
         });
 
-        /*
-         * The overlay may have been closed while the browser
-         * was waiting for microphone permission.
-         */
-        if (
-            isClosing ||
-            requestId !== startRequestId
-        ) {
+        if (isClosing || requestId !== startRequestId) {
             requestedStream.getTracks().forEach(track => track.stop());
             return;
         }
@@ -795,33 +705,25 @@ async function startTuner() {
             throw new Error("AudioContext is not supported.");
         }
 
-        // Standard robust initialization for mobile/Android WebViews
         requestedContext = new AudioContextClass();
 
         if (requestedContext.state === "suspended") {
             await requestedContext.resume();
         }
 
-        if (
-            isClosing ||
-            requestId !== startRequestId
-        ) {
+        if (isClosing || requestId !== startRequestId) {
             requestedStream.getTracks().forEach(track => track.stop());
-
             await requestedContext.close().catch(() => {});
             return;
         }
 
-        const requestedAnalyser =
-            requestedContext.createAnalyser();
+        const requestedAnalyser = requestedContext.createAnalyser();
 
         requestedAnalyser.fftSize = FFT_SIZE;
         requestedAnalyser.smoothingTimeConstant = 0.02;
 
         const requestedSource =
-            requestedContext.createMediaStreamSource(
-                requestedStream
-            );
+            requestedContext.createMediaStreamSource(requestedStream);
 
         requestedSource.connect(requestedAnalyser);
 
@@ -830,13 +732,8 @@ async function startTuner() {
         analyser = requestedAnalyser;
         microphoneSource = requestedSource;
 
-        timeDomainBuffer = new Float32Array(
-            analyser.fftSize
-        );
-
-        spectrumBuffer = new Float32Array(
-            analyser.frequencyBinCount
-        );
+        timeDomainBuffer = new Float32Array(analyser.fftSize);
+        spectrumBuffer = new Float32Array(analyser.frequencyBinCount);
 
         resetFrequencyHistory();
 
@@ -851,8 +748,7 @@ async function startTuner() {
         }
 
         if (microphoneStatus) {
-            microphoneStatus.textContent =
-                "Listening — pluck a string";
+            microphoneStatus.textContent = "Listening — pluck a string";
         }
 
         setStatus("Listening", "");
@@ -902,7 +798,6 @@ async function startTuner() {
 ========================================================== */
 
 async function stopTuner() {
-    // Invalidate any outstanding start request.
     startRequestId++;
 
     isRunning = false;
@@ -956,8 +851,7 @@ async function stopTuner() {
     }
 
     if (microphoneStatus && !isClosing) {
-        microphoneStatus.textContent =
-            "Press Start Tuner to begin";
+        microphoneStatus.textContent = "Press Start Tuner to begin";
     }
 }
 
@@ -971,11 +865,6 @@ function cleanupForPageExit() {
 
     isClosing = true;
 
-    /*
-     * Invalidate a pending getUserMedia request.
-     * If permission resolves later, startTuner() detects the
-     * invalid request and immediately stops the new stream.
-     */
     startRequestId++;
 
     isRunning = false;
@@ -1054,11 +943,8 @@ createModeControls();
 resetDisplay();
 
 if (microphoneStatus) {
-    microphoneStatus.textContent =
-        "Press Start Tuner to begin";
+    microphoneStatus.textContent = "Press Start Tuner to begin";
 }
-
-
 
 window.handleLayerVisibility = async function (isTop) {
     if (!isTop) {
