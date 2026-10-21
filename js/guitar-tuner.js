@@ -208,7 +208,7 @@ function detectPitchYIN(buffer, sampleRate) {
             : 1;
     }
 
-    const threshold = 0.15;
+const threshold = 0.10; // Stricter threshold forces YIN to pick the true fundamental period
     let candidateTau = -1;
 
     for (let tau = minTau; tau <= maxTau; tau++) {
@@ -284,22 +284,16 @@ function verifyPitch(candidate) {
 
     let frequency = candidate.frequency;
 
-    /*
-     * Only check immediate frame-to-frame octave jumps (2x / 0.5x).
-     * Removed dangerous multi-octave dividers (3x/4x) that break 
-     * legitimate jumps between Low E and High E / B strings.
-     */
     if (lastFrequency !== null) {
         const ratio = frequency / lastFrequency;
 
-        // Check for sudden 2nd harmonic jump (~2x) within a single note
+        // Only correct frame-to-frame octave jumps (~2x) during an active pluck on the same string
         if (ratio > 1.85 && ratio < 2.15) {
             const halfFrequency = frequency / 2;
             if (halfFrequency >= MIN_FREQUENCY && halfFrequency <= MAX_FREQUENCY) {
                 frequency = halfFrequency;
             }
         } 
-        // Check for sudden drop to half (~0.5x)
         else if (ratio > 0.46 && ratio < 0.54) {
             const doubleFrequency = frequency * 2;
             if (doubleFrequency >= MIN_FREQUENCY && doubleFrequency <= MAX_FREQUENCY) {
