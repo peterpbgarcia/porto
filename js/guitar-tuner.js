@@ -727,13 +727,17 @@ async function startTuner() {
     let requestedStream = null;
     let requestedContext = null;
 
-    try {
+try {
         requestedStream = await navigator.mediaDevices.getUserMedia({
             audio: {
                 echoCancellation: false,
                 noiseSuppression: false,
                 autoGainControl: false,
-                channelCount: 1
+                channelCount: 1,
+                googEchoCancellation: false,
+                googNoiseSuppression: false,
+                googAutoGainControl: false,
+                googHighpassFilter: false
             }
         });
 
