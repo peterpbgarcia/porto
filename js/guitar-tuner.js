@@ -5,7 +5,20 @@
    Compendio di Preghiere 9.0
 
    Standard tuning: A4 = 440 Hz
-   Optimized for Android WebView / Cordova APKs
+
+   Preserved interface:
+   - Existing HTML IDs and CSS classes
+   - Six standard guitar strings
+   - Automatic string detection
+   - Manual string selection and locking
+   - Frequency and cents display
+   - Tuning meter and in-tune status
+
+   Overlay lifecycle:
+   - No internal close button
+   - Clean up when the parent removes this iframe
+   - Stop microphone tracks when closing
+   - Handle closing while microphone permission is pending
 ========================================================== */
 
 
@@ -22,12 +35,12 @@ const GUITAR_STRINGS = [
     { note: "E4", frequency: 329.63, index: 5 }
 ];
 
-const FFT_SIZE = 4096;
+const FFT_SIZE = 8192;
 const MIN_FREQUENCY = 65;
 const MAX_FREQUENCY = 400;
-const MIN_CONFIDENCE = 0.60;
+const MIN_CONFIDENCE = 0.65;
 const MAX_CENTS = 50;
-const HISTORY_SIZE = 5;
+const HISTORY_SIZE = 7;
 const IN_TUNE_ENTER = 5;
 const IN_TUNE_EXIT = 10;
 
@@ -75,9 +88,6 @@ let smoothedFrequency = null;
 let lastDetectedString = null;
 let inTune = false;
 let stableFrames = 0;
-
-let autoLockedString = null;
-let silenceFrames = 0;
 
 let timeDomainBuffer = null;
 let spectrumBuffer = null;
@@ -131,7 +141,7 @@ function getNoteParts(note) {
 }
 
 function getFrequencyFromBuffer() {
-    if (!analyser || !timeDomainBuffer || !audioContext) return null;
+    if (!analyser || !timeDomainBuffer) return null;
 
     analyser.getFloatTimeDomainData(timeDomainBuffer);
 
@@ -198,7 +208,7 @@ function detectPitchYIN(buffer, sampleRate) {
             : 1;
     }
 
-    const threshold = 0.10;
+    const threshold = 0.15;
     let candidateTau = -1;
 
     for (let tau = minTau; tau <= maxTau; tau++) {
@@ -228,6 +238,7 @@ function detectPitchYIN(buffer, sampleRate) {
         if (lowest > 0.30) return null;
     }
 
+    // Parabolic interpolation improves frequency precision.
     const left = Math.max(minTau, candidateTau - 1);
     const right = Math.min(maxTau, candidateTau + 1);
 
@@ -273,7 +284,7 @@ function verifyPitch(candidate) {
 
     let frequency = candidate.frequency;
 
-    if (lastFrequency !== null && candidate.confidence > 0.75) {
+    if (lastFrequency !== null) {
         const ratio = frequency / lastFrequency;
 
         if (ratio > 1.85 && ratio < 2.15) {
@@ -298,7 +309,7 @@ function verifyPitch(candidate) {
 
 
 /* ==========================================================
-   STRING DETECTION WITH AUTO-LOCK
+   STRING DETECTION
 ========================================================== */
 
 function findNearestString(frequency) {
@@ -339,22 +350,7 @@ function detectString(frequency) {
         if (cents <= 100) return lockedString;
     }
 
-    if (autoLockedString) {
-        const centsFromLock = Math.abs(
-            frequencyToCents(frequency, autoLockedString.frequency)
-        );
-        if (centsFromLock < 300) {
-            return autoLockedString;
-        } else {
-            autoLockedString = null;
-        }
-    }
-
-    const nearest = findNearestString(frequency);
-    if (nearest) {
-        autoLockedString = nearest;
-    }
-    return nearest;
+    return findNearestString(frequency);
 }
 
 
@@ -363,8 +359,18 @@ function detectString(frequency) {
 ========================================================== */
 
 function filterFrequency(frequency) {
-    if (!Number.isFinite(frequency) || frequency <= MIN_FREQUENCY || frequency > MAX_FREQUENCY) {
+    if (!Number.isFinite(frequency) || frequency <= 0) {
         return null;
+    }
+
+    if (lastFrequency !== null) {
+        const centsJump = Math.abs(
+            frequencyToCents(frequency, lastFrequency)
+        );
+
+        if (centsJump > 750 && stableFrames > 1) {
+            return null;
+        }
     }
 
     frequencyHistory.push(frequency);
@@ -375,36 +381,31 @@ function filterFrequency(frequency) {
 
     const medianFrequency = median(frequencyHistory);
 
-    if (!Number.isFinite(medianFrequency) || medianFrequency <= 0) return null;
+    if (medianFrequency === null) return null;
 
-    if (smoothedFrequency === null || !Number.isFinite(smoothedFrequency) || smoothedFrequency <= 0) {
+    if (smoothedFrequency === null) {
         smoothedFrequency = medianFrequency;
     } else {
         const alpha = 0.35;
-        const logSmoothed = Math.log(smoothedFrequency);
-        const logMedian = Math.log(medianFrequency);
 
-        if (Number.isFinite(logSmoothed) && Number.isFinite(logMedian)) {
-            smoothedFrequency = Math.exp(logSmoothed * (1 - alpha) + logMedian * alpha);
-        } else {
-            smoothedFrequency = medianFrequency;
-        }
+        smoothedFrequency = Math.exp(
+            Math.log(smoothedFrequency) * (1 - alpha) +
+            Math.log(medianFrequency) * alpha
+        );
     }
 
     lastFrequency = smoothedFrequency;
+
     return smoothedFrequency;
 }
 
 function resetFrequencyHistory() {
-    frequencyHistory.length = 0;
+    frequencyHistory = [];
     lastFrequency = null;
     smoothedFrequency = null;
     lastDetectedString = null;
-    autoLockedString = null;
-    silenceFrames = 0;
     stableFrames = 0;
     inTune = false;
-    lastValidDetection = 0;
 }
 
 
@@ -477,14 +478,16 @@ function updateDisplay(frequency, guitarString) {
     if (detectedOctave) detectedOctave.textContent = parts.octave;
 
     if (detectedFrequency) {
-        detectedFrequency.textContent = `${frequency.toFixed(1)} Hz`;
+        detectedFrequency.textContent =
+            `${frequency.toFixed(1)} Hz`;
     }
 
     if (centsDisplay) {
         const roundedCents = Math.round(cents);
         const sign = roundedCents > 0 ? "+" : "";
 
-        centsDisplay.textContent = `${sign}${roundedCents} cents`;
+        centsDisplay.textContent =
+            `${sign}${roundedCents} cents`;
     }
 
     updateMeter(cents);
@@ -619,10 +622,6 @@ function selectString(note, frequency) {
 function detectionLoop() {
     if (!isRunning || isClosing || !analyser) return;
 
-    if (audioContext && audioContext.state === "suspended") {
-        audioContext.resume().catch(() => {});
-    }
-
     const now = performance.now();
 
     if (now - lastUiUpdate >= 35) {
@@ -632,17 +631,29 @@ function detectionLoop() {
         const verified = verifyPitch(candidate);
 
         if (verified) {
-            silenceFrames = 0;
+            const guitarStringBeforeFilter = detectString(verified.frequency);
+
+            if (guitarStringBeforeFilter && lastDetectedString !== guitarStringBeforeFilter.note) {
+                frequencyHistory = [];
+                lastFrequency = null;
+                smoothedFrequency = null;
+                stableFrames = 0;
+            }
+
             const frequency = filterFrequency(verified.frequency);
 
             if (frequency !== null) {
                 const guitarString = detectString(frequency);
 
                 if (guitarString) {
-                    if (lastDetectedString !== guitarString.note) {
+                    if (
+                        lastDetectedString === guitarString.note
+                    ) {
+                        stableFrames++;
+                    } else {
                         lastDetectedString = guitarString.note;
+                        stableFrames = 0;
                         inTune = false;
-                        frequencyHistory.length = 0;
                     }
 
                     lastValidDetection = now;
@@ -652,23 +663,17 @@ function detectionLoop() {
                         microphoneStatus.textContent =
                             tuningMode === "manual"
                                 ? `Manual mode — ${guitarString.note}`
-                                : `Tuning ${guitarString.note}`;
+                                : "Listening — pluck a string";
                     }
                 }
             }
-        } else {
-            silenceFrames++;
-            if (silenceFrames > 15) {
-                autoLockedString = null;
-            }
-
-            if (
-                lastValidDetection &&
-                now - lastValidDetection > 1200
-            ) {
-                if (microphoneStatus) {
-                    microphoneStatus.textContent = "Listening — pluck a string";
-                }
+        } else if (
+            lastValidDetection &&
+            now - lastValidDetection > 1200
+        ) {
+            if (microphoneStatus) {
+                microphoneStatus.textContent =
+                    "Listening — pluck a string";
             }
         }
     }
@@ -683,11 +688,6 @@ function detectionLoop() {
 
 async function startTuner() {
     if (isRunning || isStarting || isClosing) return;
-
-    if (animationFrame !== null) {
-        cancelAnimationFrame(animationFrame);
-        animationFrame = null;
-    }
 
     if (!navigator.mediaDevices?.getUserMedia) {
         if (microphoneStatus) {
@@ -708,7 +708,8 @@ async function startTuner() {
     }
 
     if (microphoneStatus) {
-        microphoneStatus.textContent = "Please allow microphone access.";
+        microphoneStatus.textContent =
+            "Please allow microphone access.";
     }
 
     let requestedStream = null;
@@ -720,24 +721,14 @@ async function startTuner() {
                 echoCancellation: false,
                 noiseSuppression: false,
                 autoGainControl: false,
-                channelCount: 1,
-                googEchoCancellation: false,
-                googNoiseSuppression: false,
-                googAutoGainControl: false,
-                googHighpassFilter: false
+                channelCount: 1
             }
         });
 
-        requestedStream.getAudioTracks().forEach(track => {
-            track.addEventListener('ended', () => {
-                if (isRunning) stopTuner();
-            });
-            track.addEventListener('mute', () => {
-                console.warn("Microphone stream muted by system audio focus.");
-            });
-        });
-
-        if (isClosing || requestId !== startRequestId) {
+        if (
+            isClosing ||
+            requestId !== startRequestId
+        ) {
             requestedStream.getTracks().forEach(track => track.stop());
             return;
         }
@@ -749,25 +740,36 @@ async function startTuner() {
             throw new Error("AudioContext is not supported.");
         }
 
-        requestedContext = new AudioContextClass();
+        // Explicit sample rate alignment for Android WebView stability
+        try {
+            requestedContext = new AudioContextClass({ sampleRate: 44100 });
+        } catch (e) {
+            requestedContext = new AudioContextClass();
+        }
 
         if (requestedContext.state === "suspended") {
             await requestedContext.resume();
         }
 
-        if (isClosing || requestId !== startRequestId) {
+        if (
+            isClosing ||
+            requestId !== startRequestId
+        ) {
             requestedStream.getTracks().forEach(track => track.stop());
             await requestedContext.close().catch(() => {});
             return;
         }
 
-        const requestedAnalyser = requestedContext.createAnalyser();
+        const requestedAnalyser =
+            requestedContext.createAnalyser();
 
         requestedAnalyser.fftSize = FFT_SIZE;
         requestedAnalyser.smoothingTimeConstant = 0.02;
 
         const requestedSource =
-            requestedContext.createMediaStreamSource(requestedStream);
+            requestedContext.createMediaStreamSource(
+                requestedStream
+            );
 
         requestedSource.connect(requestedAnalyser);
 
@@ -776,8 +778,13 @@ async function startTuner() {
         analyser = requestedAnalyser;
         microphoneSource = requestedSource;
 
-        timeDomainBuffer = new Float32Array(analyser.fftSize);
-        spectrumBuffer = new Float32Array(analyser.frequencyBinCount);
+        timeDomainBuffer = new Float32Array(
+            analyser.fftSize
+        );
+
+        spectrumBuffer = new Float32Array(
+            analyser.frequencyBinCount
+        );
 
         resetFrequencyHistory();
 
@@ -792,7 +799,8 @@ async function startTuner() {
         }
 
         if (microphoneStatus) {
-            microphoneStatus.textContent = "Listening — pluck a string";
+            microphoneStatus.textContent =
+                "Listening — pluck a string";
         }
 
         setStatus("Listening", "");
@@ -895,7 +903,8 @@ async function stopTuner() {
     }
 
     if (microphoneStatus && !isClosing) {
-        microphoneStatus.textContent = "Press Start Tuner to begin";
+        microphoneStatus.textContent =
+            "Press Start Tuner to begin";
     }
 }
 
@@ -908,7 +917,6 @@ function cleanupForPageExit() {
     if (isClosing) return;
 
     isClosing = true;
-
     startRequestId++;
 
     isRunning = false;
@@ -987,7 +995,8 @@ createModeControls();
 resetDisplay();
 
 if (microphoneStatus) {
-    microphoneStatus.textContent = "Press Start Tuner to begin";
+    microphoneStatus.textContent =
+        "Press Start Tuner to begin";
 }
 
 window.handleLayerVisibility = async function (isTop) {
@@ -996,7 +1005,6 @@ window.handleLayerVisibility = async function (isTop) {
             await stopTuner();
         }
     } else {
-        resetFrequencyHistory();
         resetDisplay();
         if (microphoneStatus) {
             microphoneStatus.textContent = "Press Start Tuner to begin";
