@@ -1,4 +1,3 @@
-
 /* ==================================================
    CANTI — CATALOGUE SCRIPT
 ================================================== */
@@ -148,10 +147,10 @@
         const link = createElement("a", "song-link", song.title);
 
         if (isPdf(song)) {
-            // PDFs use the new custom PDF viewer.
+            // PDFs use the custom PDF viewer.
             link.href = getPdfViewerUrl(song.file);
         } else {
-            // HTML songs keep using the existing song viewer.
+            // HTML songs use the song viewer.
             link.href =
                 "songbook-viewer.html?file=" +
                 encodeURIComponent(song.file);
@@ -353,72 +352,6 @@
 
         searchInput.focus();
     });
-
-
-
-/* ==================================================
-   OPEN SONGS AND PDFS THROUGH THE PARENT STACK
-================================================== */
-
-categoriesContainer.addEventListener("click", event => {
-    const target = event.target;
-
-    if (!(target instanceof Element)) return;
-
-    const link = target.closest(
-        ".song-link, .songbook-pdf-link"
-    );
-
-    if (!link) return;
-
-    if (
-        event.ctrlKey ||
-        event.metaKey ||
-        event.shiftKey ||
-        event.altKey ||
-        event.button !== 0
-    ) {
-        return;
-    }
-
-    event.preventDefault();
-
-    if (
-        window.parent !== window &&
-        typeof window.parent.requestOpenPageOverlay === "function"
-    ) {
-        window.parent.requestOpenPageOverlay(link.href);
-    } else {
-        // Preserve normal navigation if the catalogue is opened directly.
-        window.location.href = link.href;
-    }
-});
-
-
-
-
-    /* ==================================================
-       OPEN GUITAR TUNER THROUGH THE PARENT STACK
-    ================================================== */
-
-    const tunerButton = document.getElementById("openTuner");
-
-    if (tunerButton) {
-        tunerButton.addEventListener("click", () => {
-            if (
-                window.parent !== window &&
-                typeof window.parent.requestOpenPageOverlay === "function"
-            ) {
-                window.parent.requestOpenPageOverlay("guitar-tuner.html");
-            } else {
-                console.error(
-                    "Canti: il gestore degli overlay non è disponibile."
-                );
-            }
-        });
-    }
-
-
 
     /* ==================================================
        INITIALIZE

@@ -1,9 +1,7 @@
-
 "use strict";
 
 /* =========================================================
    SONGBOOK VIEWER
-   Shared overlay stack
    HTML songs, chord transposition and guitar tuner
 ========================================================= */
 
@@ -19,7 +17,6 @@ const songFrame = document.getElementById("songFrame");
 const minusButton = document.getElementById("transposeDown");
 const plusButton = document.getElementById("transposeUp");
 const resetButton = document.getElementById("transposeReset");
-const tunerButton = document.getElementById("openTuner");
 
 let semitones = 0;
 let originalBodyHTML = null;
@@ -202,12 +199,6 @@ songFrame?.addEventListener("load", () => {
         applyTransposition();
 
         console.log("Song loaded successfully.");
-        console.log(
-            "Chord paragraphs found:",
-            doc.querySelectorAll(
-                "p.TestoAccorde, li.TestoAccorde, div.TestoAccorde"
-            ).length
-        );
 
     } catch (error) {
         console.error("Error accessing the song:", error);
@@ -276,29 +267,6 @@ resetButton?.addEventListener("click", () => {
     semitones = 0;
     updateTransposeDisplay();
     applyTransposition();
-});
-
-
-/* =========================================================
-   OPEN GUITAR TUNER AS A NEW STACK LAYER
-========================================================= */
-
-tunerButton?.addEventListener("click", () => {
-    if (window.parent === window) {
-        console.warn(
-            "The tuner requires the shared parent overlay manager."
-        );
-        return;
-    }
-
-    if (typeof window.parent.requestOpenPageOverlay !== "function") {
-        console.error(
-            "The parent overlay manager is unavailable."
-        );
-        return;
-    }
-
-    window.parent.requestOpenPageOverlay("guitar-tuner.html");
 });
 
 

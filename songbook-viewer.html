@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -21,10 +20,10 @@
   <header class="song-viewer-header">
 
     <!-- Guitar tuner: LEFT -->
-    <button
+    <a
       id="openTuner"
+      href="tuner.html"
       class="header-action guitar-button"
-      type="button"
       aria-label="Apri accordatore"
       title="Accordatore"
     >
@@ -71,7 +70,7 @@
           fill="#1683c6"
         />
       </svg>
-    </button>
+    </a>
 
     <!-- Transposition: CENTER -->
     <div
@@ -119,7 +118,8 @@
     ></iframe>
   </main>
 
-  <!-- Song viewer JavaScript -->
+  <!-- JavaScript -->
+  <script src="js/app.js"></script>
   <script src="js/songbook-viewer.js"></script>
 
 </body>
