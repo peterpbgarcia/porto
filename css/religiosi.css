@@ -1,27 +1,30 @@
 /* ==========================================================
    CONGREGAZIONE FSMI — I RELIGIOSI
-   Standalone page styles based on Sky Blue Theme
+   Universal Style Sheet (Sky Blue Theme)
    ========================================================== */
 
 /* ==========================================================
-   ROOT VARIABLES (Sky Blue Theme)
+   ROOT VARIABLES
    ========================================================== */
 
 :root {
-    --prayer-font-size: 17px;
-    --background-color: #eaf6ff;
-    --main-blue: #4AAEE8;
-    --accent-blue: #1683c6;
-    --link-blue: #1677b5;
-    --text-color: #333333;
-    
-    --rel-blue: var(--accent-blue);
-    --rel-blue-dark: #0868a5;
-    --rel-blue-light: var(--background-color);
-    --rel-border: #b9def5;
-    --rel-text: var(--text-color);
-    --rel-muted: #666666;
-    --rel-white: #ffffff;
+  --prayer-font-size: 17px;
+  --background-color: #eaf6ff;
+  --main-blue: #4AAEE8;
+  --accent-blue: #1683c6;
+  --link-blue: #1677b5;
+  --text-color: #243746;
+  --muted-blue: #5d7688;
+  --gold: #c89b3c;
+  --card-shadow: 0 8px 22px rgba(28, 102, 145, .13);
+
+  --rel-blue: var(--accent-blue);
+  --rel-blue-dark: #0868a5;
+  --rel-blue-light: var(--background-color);
+  --rel-border: #b9def5;
+  --rel-text: var(--text-color);
+  --rel-muted: #666666;
+  --rel-white: #ffffff;
 }
 
 /* ==========================================================
@@ -29,28 +32,28 @@
    ========================================================== */
 
 .religiosi-page {
-    min-height: 100vh;
-    margin: 0;
-    background: var(--background-color);
-    color: var(--text-color);
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: var(--prayer-font-size);
-    line-height: 1.24;
-    letter-spacing: .01em;
-    -webkit-text-size-adjust: 100%;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: var(--prayer-font-size);
+  line-height: 1.24;
+  letter-spacing: .01em;
+  -webkit-text-size-adjust: 100%;
 }
 
 .religiosi-page *,
 .religiosi-page *::before,
 .religiosi-page *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .religiosi-page .religiosi-container {
-    width: 100%;
-    max-width: 850px;
-    margin: 0 auto;
-    padding: 20px 20px 40px;
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 20px 20px 40px;
 }
 
 /* ==========================================================
@@ -58,119 +61,491 @@
    ========================================================== */
 
 .religiosi-page .religiosi-page-header {
-    margin: 0 0 24px;
-    text-align: center;
+  margin: 0 0 24px;
+  text-align: center;
 }
 
 .religiosi-page .religiosi-page-header h1 {
-    margin: 0 0 8px;
-    color: var(--accent-blue);
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 1.8rem;
-    font-weight: normal;
-    line-height: 1.15;
+  margin: 0 0 8px;
+  color: var(--accent-blue);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.8rem;
+  font-weight: normal;
+  line-height: 1.15;
 }
 
 .religiosi-page .religiosi-page-header p {
-    margin: 0;
-    color: var(--rel-muted);
-    font-size: .95rem;
-    line-height: 1.35;
+  margin: 0;
+  color: var(--rel-muted);
+  font-size: .95rem;
+  line-height: 1.35;
 }
 
 /* ==========================================================
-   SEARCH
+   CELEBRATIONS CAROUSEL (UPCOMING CELEBRATIONS)
+   ========================================================== */
+
+.celebrations {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 24px;
+  min-width: 0;
+  min-height: 125px;
+  max-height: 230px;
+  box-sizing: border-box;
+}
+
+.celebration-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  max-height: inherit;
+  overflow: hidden;
+  border-radius: 17px;
+  box-sizing: border-box;
+}
+
+/* Horizontal swipe-only slider */
+.celebration-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  max-height: inherit;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-snap-stop: always;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  scrollbar-width: none;
+  box-sizing: border-box;
+}
+
+.celebration-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual Card */
+.celebration-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 28%) minmax(0, 1fr);
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 100%;
+  min-height: 125px;
+  max-height: 230px;
+  overflow: hidden;
+  isolation: isolate;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  border: 1px solid rgba(74, 174, 232, .25);
+  border-radius: 17px;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(234, 246, 255, .95),
+      transparent 44%
+    ),
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #fbfdff 58%,
+      #f0f9ff 100%
+    );
+  box-shadow: var(--card-shadow);
+  color: var(--text-color);
+  box-sizing: border-box;
+}
+
+.celebration-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -35px;
+  right: -30px;
+  width: 112px;
+  height: 112px;
+  border: 1px solid rgba(74, 174, 232, .22);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 10px rgba(74, 174, 232, .045),
+    0 0 0 22px rgba(74, 174, 232, .03);
+  pointer-events: none;
+}
+
+/* Photo */
+.celebration-photo {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(145deg, #d9effc, #f5fbff);
+  border-right: 3px solid var(--main-blue);
+}
+
+.celebration-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 125px;
+  max-height: 230px;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.celebration-photo.is-placeholder {
+  display: grid;
+  place-items: center;
+}
+
+.celebration-photo.is-placeholder::after {
+  content: "✦";
+  color: rgba(22, 131, 198, .45);
+  font-size: 2.1rem;
+}
+
+/* Card Content */
+.celebration-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  gap: 4px;
+  padding: clamp(10px, 1.7vw, 17px) clamp(12px, 2vw, 21px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.celebration-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  color: var(--accent-blue);
+  font: 700 .68rem/1.15 system-ui, sans-serif;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.celebration-title {
+  margin: 0;
+  color: var(--accent-blue);
+  font: 700 clamp(1.15rem, 2.2vw, 1.75rem)/1.04 Georgia, "Times New Roman", serif;
+  letter-spacing: -.025em;
+}
+
+.celebration-name {
+  max-width: 100%;
+  margin: 0;
+  color: var(--text-color);
+  font: 700 clamp(.9rem, 1.45vw, 1.08rem)/1.18 Georgia, "Times New Roman", serif;
+  overflow-wrap: anywhere;
+}
+
+.celebration-date {
+  margin: 1px 0 0;
+  color: var(--muted-blue);
+  font: 600 .73rem/1.25 system-ui, sans-serif;
+}
+
+.celebration-message {
+  max-width: 42em;
+  margin: 2px 0 0;
+  color: #425c6d;
+  font: italic .82rem/1.3 Georgia, "Times New Roman", serif;
+}
+
+.celebration-message:empty {
+  display: none;
+}
+
+/* Birthday Card Variant */
+.celebration-birthday {
+  border-color: rgba(200, 155, 60, .38);
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(255, 247, 227, .98),
+      transparent 47%
+    ),
+    linear-gradient(135deg, #ffffff 0%, #fffdf8 58%, #fff7e3 100%);
+}
+
+.celebration-birthday .celebration-photo {
+  border-right-color: var(--gold);
+}
+
+.celebration-birthday .celebration-icon,
+.celebration-birthday .celebration-title {
+  color: #a87919;
+}
+
+.celebration-birthday::before {
+  border-color: rgba(200, 155, 60, .24);
+}
+
+/* Profession Card Variant */
+.celebration-profession {
+  border-color: rgba(74, 174, 232, .38);
+}
+
+.celebration-profession .celebration-photo {
+  border-right-color: var(--accent-blue);
+}
+
+/* Ordination Card Variant */
+.celebration-ordination {
+  border-color: rgba(22, 131, 198, .38);
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(220, 241, 255, .98),
+      transparent 47%
+    ),
+    linear-gradient(135deg, #ffffff 0%, #f9fdff 58%, #eaf6ff 100%);
+}
+
+.celebration-ordination .celebration-photo {
+  border-right-color: #126da5;
+}
+
+/* Group Card Variant */
+.celebration-group-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-color: rgba(200, 155, 60, .36);
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(255, 247, 227, .88),
+      transparent 42%
+    ),
+    linear-gradient(135deg, #ffffff 0%, #fbfdff 65%, #fffaf0 100%);
+}
+
+.celebration-group-card::before {
+  top: -55px;
+  right: -25px;
+  width: 135px;
+  height: 135px;
+  border-color: rgba(200, 155, 60, .2);
+}
+
+.celebration-group-heading {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  padding: 12px 17px 9px;
+  border-bottom: 1px solid rgba(200, 155, 60, .24);
+  background: rgba(255, 255, 255, .7);
+}
+
+.celebration-group-title {
+  margin: 0;
+  color: #986d16;
+  font: 700 clamp(1.05rem, 2vw, 1.35rem)/1.12 Georgia, "Times New Roman", serif;
+}
+
+.celebration-group-date {
+  margin: 3px 0 0;
+  color: var(--muted-blue);
+  font: 600 .7rem/1.2 system-ui, sans-serif;
+  text-transform: capitalize;
+}
+
+.celebration-group-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 4px 17px 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 155, 60, .55) transparent;
+}
+
+.celebration-group-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.celebration-group-list::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: rgba(200, 155, 60, .55);
+}
+
+.celebration-group-person {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 7px;
+  align-items: start;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(74, 174, 232, .15);
+}
+
+.celebration-group-person:last-child {
+  border-bottom: 0;
+}
+
+.celebration-group-icon {
+  padding-top: 1px;
+  font-size: .95rem;
+  text-align: center;
+}
+
+.celebration-group-details {
+  min-width: 0;
+}
+
+.celebration-group-name {
+  margin: 0;
+  color: var(--text-color);
+  font: 700 .82rem/1.2 Georgia, "Times New Roman", serif;
+  overflow-wrap: anywhere;
+}
+
+.celebration-group-type {
+  margin: 2px 0 0;
+  color: #5a7180;
+  font: 600 .69rem/1.2 system-ui, sans-serif;
+}
+
+/* Loading & Empty States */
+.celebration-loading {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  color: var(--muted-blue);
+  background: rgba(234, 246, 255, .94);
+  font: 600 .85rem/1.35 system-ui, sans-serif;
+  text-align: center;
+}
+
+.celebration-loading[hidden] {
+  display: none !important;
+}
+
+.celebration-empty {
+  display: flex;
+  flex: 0 0 100%;
+  min-width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid rgba(74, 174, 232, .25);
+  border-radius: 17px;
+  color: var(--muted-blue);
+  background: linear-gradient(135deg, #fff, var(--background-color));
+  text-align: center;
+  font: 600 .85rem/1.45 system-ui, sans-serif;
+  box-sizing: border-box;
+}
+
+/* ==========================================================
+   SEARCH SECTION
    ========================================================== */
 
 .religiosi-page .religiosi-search-section {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin: 0 0 30px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0 0 30px;
 }
 
 .religiosi-page .religiosi-search-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
 }
 
 .religiosi-page .religiosi-search-box {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    min-height: 52px;
-    padding: 0 15px;
-    background: var(--rel-white);
-    border: 1px solid var(--rel-border);
-    border-radius: 18px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
-    transition: border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 15px;
+  background: var(--rel-white);
+  border: 1px solid var(--rel-border);
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .religiosi-page .religiosi-search-box:focus-within {
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(22, 131, 198, 0.15);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(22, 131, 198, 0.15);
 }
 
 .religiosi-page .search-icon {
-    flex: 0 0 28px;
-    color: var(--accent-blue);
-    font-size: 24px;
-    line-height: 1;
-    text-align: center;
+  flex: 0 0 28px;
+  color: var(--accent-blue);
+  font-size: 24px;
+  line-height: 1;
+  text-align: center;
 }
 
 .religiosi-page .religiosi-search-box input {
-    flex: 1;
-    min-width: 0;
-    width: 100%;
-    height: 48px;
-    padding: 0 10px;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: var(--text-color);
-    font-family: inherit;
-    font-size: 16px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 48px;
+  padding: 0 10px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 16px;
 }
 
 .religiosi-page .religiosi-search-box input::placeholder {
-    color: #888888;
+  color: #888888;
 }
 
 .religiosi-page .search-clear {
-    display: none;
-    flex: 0 0 30px;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: var(--rel-muted);
-    font-size: 20px;
-    cursor: pointer;
+  display: none;
+  flex: 0 0 30px;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rel-muted);
+  font-size: 20px;
+  cursor: pointer;
 }
 
 .religiosi-page .search-clear.show {
-    display: flex;
+  display: flex;
 }
 
 .religiosi-page .search-clear:hover,
 .religiosi-page .search-clear:focus-visible {
-    background: var(--background-color);
-    color: var(--accent-blue);
-    outline: none;
+  background: var(--background-color);
+  color: var(--accent-blue);
+  outline: none;
 }
 
 .religiosi-page .search-arrow {
-    flex: 0 0 auto;
-    margin-left: 5px;
-    color: var(--rel-muted);
-    font-size: 15px;
+  flex: 0 0 auto;
+  margin-left: 5px;
+  color: var(--rel-muted);
+  font-size: 15px;
 }
 
 /* ==========================================================
@@ -178,44 +553,44 @@
    ========================================================== */
 
 .religiosi-page .religiosi-suggestions {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    left: 0;
-    z-index: 100;
-    display: none;
-    max-height: 320px;
-    overflow-y: auto;
-    padding: 8px;
-    border: 1px solid var(--rel-border);
-    border-radius: 14px;
-    background: var(--rel-white);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: 0;
+  z-index: 100;
+  display: none;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--rel-border);
+  border-radius: 14px;
+  background: var(--rel-white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
 }
 
 .religiosi-page .religiosi-suggestions.show {
-    display: block;
+  display: block;
 }
 
 .religiosi-page .religious-suggestion {
-    display: block;
-    width: 100%;
-    padding: 12px 14px;
-    border: 0;
-    border-radius: 8px;
-    background: var(--rel-white);
-    color: var(--text-color);
-    font-family: inherit;
-    font-size: 15px;
-    text-align: left;
-    cursor: pointer;
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--rel-white);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
 }
 
 .religiosi-page .religious-suggestion:hover,
 .religiosi-page .religious-suggestion:focus-visible {
-    outline: none;
-    background: var(--background-color);
-    color: var(--link-blue);
+  outline: none;
+  background: var(--background-color);
+  color: var(--link-blue);
 }
 
 /* ==========================================================
@@ -223,162 +598,162 @@
    ========================================================== */
 
 .religiosi-page .religious-id-card {
-    width: 100%;
-    max-width: 850px;
-    margin: 0 auto;
-    overflow: hidden;
-    border: 1px solid var(--rel-border);
-    border-radius: 18px;
-    background: var(--rel-white);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--rel-border);
+  border-radius: 18px;
+  background: var(--rel-white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
 }
 
-/* Card header */
+/* Card Header */
 
 .religiosi-page .religious-id-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    min-height: 76px;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--rel-border);
-    background: linear-gradient(110deg, var(--background-color) 0%, #ffffff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 76px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--rel-border);
+  background: linear-gradient(110deg, var(--background-color) 0%, #ffffff 100%);
 }
 
 .religiosi-page .religious-id-brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
 }
 
 .religiosi-page .religious-id-logo {
-    display: flex;
-    flex: 0 0 48px;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    overflow: hidden;
-    border: 1px solid var(--rel-border);
-    border-radius: 10px;
-    background: var(--rel-white);
+  display: flex;
+  flex: 0 0 48px;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border: 1px solid var(--rel-border);
+  border-radius: 10px;
+  background: var(--rel-white);
 }
 
 .religiosi-page .religious-id-logo img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .religiosi-page .religious-id-brand-text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    gap: 2px;
-    line-height: 1.25;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+  line-height: 1.25;
 }
 
 .religiosi-page .religious-id-brand-text strong {
-    color: var(--text-color);
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
+  color: var(--text-color);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
 }
 
 .religiosi-page .religious-id-brand-text span {
-    color: var(--accent-blue);
-    font-size: 13px;
+  color: var(--accent-blue);
+  font-size: 13px;
 }
 
 .religiosi-page .religious-id-type {
-    flex: 0 0 auto;
-    padding: 6px 12px;
-    border: 1px solid var(--rel-border);
-    border-radius: 20px;
-    background: var(--rel-white);
-    color: var(--accent-blue);
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 0.8px;
+  flex: 0 0 auto;
+  padding: 6px 12px;
+  border: 1px solid var(--rel-border);
+  border-radius: 20px;
+  background: var(--rel-white);
+  color: var(--accent-blue);
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
 }
 
-/* Card body */
+/* Card Body */
 
 .religiosi-page .religious-id-body {
-    padding: 26px;
+  padding: 26px;
 }
 
 /* Identity / Name & Photo */
 
 .religiosi-page .religious-identity {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .religiosi-page .religious-identity-text {
-    flex: 1;
-    min-width: 0;
-    padding-top: 4px;
+  flex: 1;
+  min-width: 0;
+  padding-top: 4px;
 }
 
 .religiosi-page .religious-name-field {
-    margin-bottom: 14px;
+  margin-bottom: 14px;
 }
 
 .religiosi-page .religious-name-field:last-of-type {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .religiosi-page .religious-name-label {
-    display: block;
-    margin-bottom: 4px;
-    color: var(--rel-muted);
-    font-size: 11px;
-    font-weight: bold;
-    letter-spacing: 1px;
+  display: block;
+  margin-bottom: 4px;
+  color: var(--rel-muted);
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 .religiosi-page .religious-name-value {
-    display: block;
-    min-height: 28px;
-    color: var(--text-color);
-    font-size: 24px;
-    font-weight: normal;
-    line-height: 1.2;
-    overflow-wrap: anywhere;
+  display: block;
+  min-height: 28px;
+  color: var(--text-color);
+  font-size: 24px;
+  font-weight: normal;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .religiosi-page .religious-profession {
-    margin-top: 14px;
-    color: var(--accent-blue);
-    font-size: 16px;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
+  margin-top: 14px;
+  color: var(--accent-blue);
+  font-size: 16px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .religiosi-page .religious-photo-frame {
-    flex: 0 0 140px;
-    width: 140px;
-    height: 180px;
-    overflow: hidden;
-    border: 1px solid var(--rel-border);
-    border-radius: 12px;
-    background: var(--background-color);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+  flex: 0 0 140px;
+  width: 140px;
+  height: 180px;
+  overflow: hidden;
+  border: 1px solid var(--rel-border);
+  border-radius: 12px;
+  background: var(--background-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
 }
 
 .religiosi-page #religiousPhoto {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background: var(--background-color);
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--background-color);
 }
 
 /* ==========================================================
@@ -386,46 +761,46 @@
    ========================================================== */
 
 .religiosi-page .religious-data-section {
-    width: 100%;
-    margin-top: 24px;
+  width: 100%;
+  margin-top: 24px;
 }
 
 .religiosi-page .religious-section-title {
-    margin: 0 0 16px;
-    padding: 0 0 8px;
-    border-bottom: 1px solid var(--rel-border);
-    color: var(--accent-blue);
-    font-size: 13px;
-    font-weight: bold;
-    letter-spacing: 1.2px;
+  margin: 0 0 16px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--rel-border);
+  color: var(--accent-blue);
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1.2px;
 }
 
 .religiosi-page .religious-data-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
 }
 
 .religiosi-page .religious-data-item {
-    min-width: 0;
-    padding: 2px 0;
+  min-width: 0;
+  padding: 2px 0;
 }
 
 .religiosi-page .info-label {
-    display: block;
-    margin-bottom: 4px;
-    color: var(--rel-muted);
-    font-size: 10px;
-    font-weight: bold;
-    letter-spacing: 0.8px;
+  display: block;
+  margin-bottom: 4px;
+  color: var(--rel-muted);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
 }
 
 .religiosi-page .info-value {
-    display: block;
-    color: var(--text-color);
-    font-size: 15px;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
+  display: block;
+  color: var(--text-color);
+  font-size: 15px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 /* ==========================================================
@@ -433,55 +808,55 @@
    ========================================================== */
 
 .religiosi-page .religious-contact-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .religiosi-page .religious-contact-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    min-width: 0;
-    padding: 14px;
-    border: 1px solid var(--rel-border);
-    border-radius: 12px;
-    background: var(--background-color);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--rel-border);
+  border-radius: 12px;
+  background: var(--background-color);
 }
 
 .religiosi-page .contact-icon {
-    display: flex;
-    flex: 0 0 34px;
-    align-items: center;
-    justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: var(--rel-white);
-    color: var(--accent-blue);
-    font-size: 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .05);
+  display: flex;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--rel-white);
+  color: var(--accent-blue);
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .05);
 }
 
 .religiosi-page .contact-content {
-    flex: 1;
-    min-width: 0;
-    padding-top: 2px;
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
 }
 
 .religiosi-page .contact-link {
-    display: block;
-    color: var(--link-blue);
-    font-size: 14px;
-    line-height: 1.4;
-    text-decoration: none;
-    overflow-wrap: anywhere;
+  display: block;
+  color: var(--link-blue);
+  font-size: 14px;
+  line-height: 1.4;
+  text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
 .religiosi-page .contact-link:hover,
 .religiosi-page .contact-link:focus-visible {
-    color: #0c5b8d;
-    text-decoration: underline;
+  color: #0c5b8d;
+  text-decoration: underline;
 }
 
 /* ==========================================================
@@ -489,18 +864,18 @@
    ========================================================== */
 
 .religiosi-page .religious-id-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 42px;
-    padding: 10px 18px;
-    border-top: 1px solid var(--rel-border);
-    background: var(--background-color);
-    color: var(--rel-muted);
-    font-size: 10px;
-    font-weight: bold;
-    letter-spacing: 1.2px;
-    text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--rel-border);
+  background: var(--background-color);
+  color: var(--rel-muted);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.2px;
+  text-align: center;
 }
 
 /* ==========================================================
@@ -508,27 +883,27 @@
    ========================================================== */
 
 @media (max-width: 768px) {
-    .religiosi-page .religiosi-container {
-        padding: 16px 16px 32px;
-    }
+  .religiosi-page .religiosi-container {
+    padding: 16px 16px 32px;
+  }
 
-    .religiosi-page .religiosi-page-header h1 {
-        font-size: 1.6rem;
-    }
+  .religiosi-page .religiosi-page-header h1 {
+    font-size: 1.6rem;
+  }
 
-    .religiosi-page .religious-id-body {
-        padding: 20px;
-    }
+  .religiosi-page .religious-id-body {
+    padding: 20px;
+  }
 
-    .religiosi-page .religious-photo-frame {
-        flex-basis: 125px;
-        width: 125px;
-        height: 160px;
-    }
+  .religiosi-page .religious-photo-frame {
+    flex-basis: 125px;
+    width: 125px;
+    height: 160px;
+  }
 
-    .religiosi-page .religious-name-value {
-        font-size: 21px;
-    }
+  .religiosi-page .religious-name-value {
+    font-size: 21px;
+  }
 }
 
 /* ==========================================================
@@ -536,137 +911,253 @@
    ========================================================== */
 
 @media (max-width: 600px) {
-    .religiosi-page .religiosi-container {
-        padding: 12px 12px 28px;
-    }
+  .religiosi-page .religiosi-container {
+    padding: 12px 12px 28px;
+  }
 
-    .religiosi-page .religiosi-page-header {
-        margin-bottom: 20px;
-    }
+  .religiosi-page .religiosi-page-header {
+    margin-bottom: 20px;
+  }
 
-    .religiosi-page .religiosi-page-header h1 {
-        font-size: 1.45rem;
-    }
+  .religiosi-page .religiosi-page-header h1 {
+    font-size: 1.45rem;
+  }
 
-    .religiosi-page .religiosi-page-header p {
-        font-size: 0.88rem;
-    }
+  .religiosi-page .religiosi-page-header p {
+    font-size: 0.88rem;
+  }
 
-    .religiosi-page .religiosi-search-section {
-        margin-bottom: 20px;
-    }
+  /* Celebrations Mobile Adjustments */
+  .celebrations {
+    min-height: 120px;
+    max-height: 190px;
+    margin-bottom: 20px;
+  }
 
-    .religiosi-page .religiosi-search-box {
-        min-height: 48px;
-        padding: 0 12px;
-        border-radius: 14px;
-    }
+  .celebration-carousel,
+  .celebration-track,
+  .celebration-card,
+  .celebration-photo img {
+    min-height: 120px;
+    max-height: 190px;
+  }
 
-    .religiosi-page .religiosi-search-box input {
-        height: 44px;
-        font-size: 15px;
-    }
+  .celebration-content {
+    gap: 3px;
+    padding: 9px 11px;
+  }
 
-    .religiosi-page .religious-id-card {
-        border-radius: 16px;
-    }
+  .celebration-icon {
+    font-size: .6rem;
+    letter-spacing: .06em;
+  }
 
-    .religiosi-page .religious-id-header {
-        min-height: 64px;
-        padding: 12px 16px;
-        gap: 10px;
-    }
+  .celebration-title {
+    font-size: clamp(1.05rem, 5vw, 1.45rem);
+  }
 
-    .religiosi-page .religious-id-brand {
-        gap: 10px;
-    }
+  .celebration-name {
+    font-size: clamp(.82rem, 3.5vw, .98rem);
+  }
 
-    .religiosi-page .religious-id-logo {
-        flex-basis: 40px;
-        width: 40px;
-        height: 40px;
-    }
+  .celebration-date {
+    font-size: .67rem;
+  }
 
-    .religiosi-page .religious-id-brand-text strong {
-        font-size: 10px;
-    }
+  .celebration-message {
+    font-size: .73rem;
+    line-height: 1.22;
+  }
 
-    .religiosi-page .religious-id-brand-text span {
-        font-size: 11px;
-    }
+  .celebration-group-heading {
+    padding: 10px 13px 7px;
+  }
 
-    .religiosi-page .religious-id-type {
-        padding: 4px 8px;
-        font-size: 9px;
-    }
+  .celebration-group-list {
+    padding: 3px 13px 6px;
+  }
 
-    .religiosi-page .religious-id-body {
-        padding: 16px;
-    }
+  .celebration-group-person {
+    padding: 6px 0;
+  }
 
-    .religiosi-page .religious-identity {
-        gap: 14px;
-        margin-bottom: 20px;
-    }
+  /* Search Section Mobile */
+  .religiosi-page .religiosi-search-section {
+    margin-bottom: 20px;
+  }
 
-    .religiosi-page .religious-photo-frame {
-        flex-basis: 110px;
-        width: 110px;
-        height: 145px;
-        border-radius: 10px;
-    }
+  .religiosi-page .religiosi-search-box {
+    min-height: 48px;
+    padding: 0 12px;
+    border-radius: 14px;
+  }
 
-    .religiosi-page .religious-name-field {
-        margin-bottom: 10px;
-    }
+  .religiosi-page .religiosi-search-box input {
+    height: 44px;
+    font-size: 15px;
+  }
 
-    .religiosi-page .religious-name-label {
-        font-size: 10px;
-    }
+  /* ID Card Mobile */
+  .religiosi-page .religious-id-card {
+    border-radius: 16px;
+  }
 
-    .religiosi-page .religious-name-value {
-        font-size: 18px;
-    }
+  .religiosi-page .religious-id-header {
+    min-height: 64px;
+    padding: 12px 16px;
+    gap: 10px;
+  }
 
-    .religiosi-page .religious-profession {
-        margin-top: 8px;
-        font-size: 14px;
-    }
+  .religiosi-page .religious-id-brand {
+    gap: 10px;
+  }
 
-    .religiosi-page .religious-data-section {
-        margin-top: 18px;
-    }
+  .religiosi-page .religious-id-logo {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
 
-    .religiosi-page .religious-section-title {
-        margin-bottom: 12px;
-        font-size: 12px;
-    }
+  .religiosi-page .religious-id-brand-text strong {
+    font-size: 10px;
+  }
 
-    .religiosi-page .religious-data-grid {
-        gap: 14px 12px;
-    }
+  .religiosi-page .religious-id-brand-text span {
+    font-size: 11px;
+  }
 
-    .religiosi-page .info-label {
-        font-size: 9px;
-    }
+  .religiosi-page .religious-id-type {
+    padding: 4px 8px;
+    font-size: 9px;
+  }
 
-    .religiosi-page .info-value {
-        font-size: 14px;
-    }
+  .religiosi-page .religious-id-body {
+    padding: 16px;
+  }
 
-    .religiosi-page .religious-contact-grid {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 10px;
-    }
+  .religiosi-page .religious-identity {
+    gap: 14px;
+    margin-bottom: 20px;
+  }
 
-    .religiosi-page .religious-contact-item {
-        padding: 12px;
-    }
+  .religiosi-page .religious-photo-frame {
+    flex-basis: 110px;
+    width: 110px;
+    height: 145px;
+    border-radius: 10px;
+  }
 
-    .religiosi-page .religious-id-footer {
-        min-height: 38px;
-        font-size: 9px;
-    }
+  .religiosi-page .religious-name-field {
+    margin-bottom: 10px;
+  }
+
+  .religiosi-page .religious-name-label {
+    font-size: 10px;
+  }
+
+  .religiosi-page .religious-name-value {
+    font-size: 18px;
+  }
+
+  .religiosi-page .religious-profession {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  .religiosi-page .religious-data-section {
+    margin-top: 18px;
+  }
+
+  .religiosi-page .religious-section-title {
+    margin-bottom: 12px;
+    font-size: 12px;
+  }
+
+  .religiosi-page .religious-data-grid {
+    gap: 14px 12px;
+  }
+
+  .religiosi-page .info-label {
+    font-size: 9px;
+  }
+
+  .religiosi-page .info-value {
+    font-size: 14px;
+  }
+
+  .religiosi-page .religious-contact-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .religiosi-page .religious-contact-item {
+    padding: 12px;
+  }
+
+  .religiosi-page .religious-id-footer {
+    min-height: 38px;
+    font-size: 9px;
+  }
+}
+
+/* ==========================================================
+   LANDSCAPE & VERY SMALL SCREENS
+   ========================================================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .celebrations {
+    min-height: 105px;
+    max-height: 155px;
+  }
+
+  .celebration-carousel,
+  .celebration-track,
+  .celebration-card,
+  .celebration-photo img {
+    min-height: 105px;
+    max-height: 155px;
+  }
+
+  .celebration-content {
+    padding: 7px 11px;
+    gap: 2px;
+  }
+
+  .celebration-message {
+    font-size: .7rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .celebration-card {
+    grid-template-columns: minmax(0, 25%) minmax(0, 1fr);
+  }
+
+  .celebration-content {
+    padding: 8px 9px;
+  }
+
+  .celebration-icon {
+    font-size: .56rem;
+  }
+
+  .celebration-title {
+    font-size: 1.03rem;
+  }
+
+  .celebration-name {
+    font-size: .8rem;
+  }
+
+  .celebration-message {
+    font-size: .68rem;
+  }
+
+  .celebration-group-heading,
+  .celebration-group-list {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
 }
 
 /* ==========================================================
@@ -674,10 +1165,11 @@
    ========================================================== */
 
 @media (prefers-reduced-motion: reduce) {
-    .religiosi-page *,
-    .religiosi-page *::before,
-    .religiosi-page *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
-    }
+  .religiosi-page *,
+  .religiosi-page *::before,
+  .religiosi-page *::after,
+  .celebration-track {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
