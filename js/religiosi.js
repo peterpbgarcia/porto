@@ -9,7 +9,7 @@ FILES
 ========================================================== */
 
 const EXCEL_FILE = "dat/dat-rel.xlsx";
-const LOGO_PATH = "img/logo.png";
+const LOGO_PATH = "images/logo.png";
 
 /* ==========================================================
 EXCEL COLUMN NAMES
