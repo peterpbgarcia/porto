@@ -2,12 +2,11 @@
 
 /* ==========================================================
    FULL-SCREEN OVERLAY STACK
-   COMPENDIUM 9.0
+   COMPENDIUM 9.0 (Modal & Special Viewer Manager)
 
-   - Index remains the base page.
-   - New pages open above existing pages.
-   - Closing removes only the topmost page.
-   - Browser back button / swipe gestures close the topmost page.
+   - Used specifically for popups like Songbook Viewer, Guitar Tuner, and Footer PDFs.
+   - Closing removes only the topmost overlay layer.
+   - Browser back button / swipe gestures close the topmost overlay layer.
 ========================================================== */
 
 
@@ -231,7 +230,7 @@ document.querySelectorAll(".songbook-footer a").forEach(function (link) {
 
 
 /* ==========================================================
-   ANDROID / CAPACITOR BACK BUTTON
+   ANDROID / CAPACITOR BACK BUTTON (FOR OVERLAYS ONLY)
 ========================================================== */
 
 if (
@@ -248,37 +247,7 @@ if (
                 closePageOverlay();
                 return;
             }
-
-            window.location.replace("index.html");
+            // If no overlay is open, let app.js handle standard page back/exit behavior
         });
     }
 }
-
-
-/* ==========================================================
-   HOMEPAGE NAVIGATION
-========================================================== */
-
-document.addEventListener("click", function (event) {
-    const target = event.target;
-
-    if (!(target instanceof Element)) return;
-
-    const link = target.closest(".app-grid a");
-
-    if (!link) return;
-    if (!document.querySelector("main.home")) return;
-
-    if (
-        event.ctrlKey ||
-        event.metaKey ||
-        event.shiftKey ||
-        event.altKey ||
-        event.button !== 0
-    ) {
-        return;
-    }
-
-    event.preventDefault();
-    openPageOverlay(link.href);
-});

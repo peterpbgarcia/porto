@@ -42,6 +42,47 @@ if (window.Capacitor && window.Capacitor.isNativePlatform()) {
 }
 
 
+/* ==========================================================
+   UNLIMITED NAVIGATION & NATIVE EXIT HANDLER
+========================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+    /* 
+       Prevent home links/logos from stacking duplicate index entries 
+       by swapping them in-place with location.replace().
+    */
+    document.querySelectorAll("a.home-link, a[href='index.html']").forEach(link => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            window.location.replace("index.html");
+        });
+    });
+});
+
+
+/* 
+   Native Android / Capacitor Back Button Handler
+*/
+if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+    const App = window.Capacitor.Plugins?.App;
+
+    if (App) {
+        App.addListener("backButton", function () {
+            const pathname = window.location.pathname;
+            const isIndex = pathname.endsWith("/") || pathname.endsWith("/index.html") || pathname === "";
+
+            if (isIndex) {
+                // Exit app immediately when pressing back on the main page
+                App.exitApp();
+            } else {
+                // Otherwise, go back one step in the unlimited history stack
+                window.history.back();
+            }
+        });
+    }
+}
+
+
 /* ==========================================
    ZOOM
 ========================================== */
@@ -298,17 +339,6 @@ function showPrayer(language, button) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 /* ==========================================================
    SLIDER PROGRESS
    ALL INTENTIONS SLIDERS
@@ -399,8 +429,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* ==========================================
-           DOT NAVIGATION
-        ========================================== */
+             DOT NAVIGATION
+          ========================================== */
 
         dots.forEach((dot, i) => {
 
@@ -429,4 +459,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
-
