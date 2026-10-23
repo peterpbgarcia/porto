@@ -52,29 +52,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Native Android / Capacitor Back Button Handler
-if (window.Capacitor && window.Capacitor.isNativePlatform()) {
-    const App = window.Capacitor.Plugins?.App;
+// Native Android / Cordova Back Button Handler
+document.addEventListener("deviceready", () => {
+    document.addEventListener("backbutton", function (e) {
+        // If an overlay popup is active (e.g. Mass Songbook), let overlay handler take priority
+        const overlayActive = document.getElementById("pageOverlay")?.classList.contains("active");
+        if (overlayActive) return;
 
-    if (App) {
-        App.addListener("backButton", function () {
-            // If an overlay popup is active (e.g. Mass Songbook), let overlay handler take priority
-            const overlayActive = document.getElementById("pageOverlay")?.classList.contains("active");
-            if (overlayActive) return;
+        const pathname = window.location.pathname;
+        const isIndex = pathname.endsWith("/") || pathname.endsWith("/index.html") || pathname === "";
 
-            const pathname = window.location.pathname;
-            const isIndex = pathname.endsWith("/") || pathname.endsWith("/index.html") || pathname === "";
-
-            if (isIndex) {
-                // Exit app immediately when pressing back on the main index page
-                App.exitApp();
-            } else {
-                // Go back one step in the unlimited history stack
-                window.history.back();
+        if (isIndex) {
+            // Exit app immediately when pressing back on the main index page
+            if (navigator.app && navigator.app.exitApp) {
+                navigator.app.exitApp();
+            } else if (navigator.exitApp) {
+                navigator.exitApp();
             }
-        });
-    }
-}
+        } else {
+            // Go back one step in the unlimited history stack
+            window.history.back();
+        }
+    }, false);
+}, false);
 
 
 /* ==========================================
