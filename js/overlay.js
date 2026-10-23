@@ -5,8 +5,7 @@
    COMPENDIUM 9.0 (Modal & Special Viewer Manager)
 
    - Used specifically for popups like Songbook Viewer, Guitar Tuner, and Footer PDFs.
-   - Closing removes only the topmost overlay layer.
-   - Browser back button / swipe gestures close the topmost overlay layer.
+   - Closing removes only the topmost overlay layer via back button / gesture.
 ========================================================== */
 
 
@@ -15,8 +14,6 @@
 ========================================================== */
 
 const pageOverlay = document.getElementById("pageOverlay");
-const pageOverlayClose = document.getElementById("pageOverlayClose");
-
 const overlayStack = [];
 
 let backButtonListenerRegistered = false;
@@ -56,17 +53,13 @@ function updateOverlayStack() {
         item.frame.style.pointerEvents = isTop ? "auto" : "none";
         item.frame.setAttribute("aria-hidden", String(!isTop));
 
-        // Notify iframe layer of its visibility state (fixes the tuner bug)
+        // Notify iframe layer of its visibility state
         try {
             if (item.frame.contentWindow && typeof item.frame.contentWindow.handleLayerVisibility === "function") {
                 item.frame.contentWindow.handleLayerVisibility(isTop);
             }
         } catch (e) {}
     });
-
-    if (pageOverlayClose) {
-        pageOverlayClose.style.display = hasOverlays ? "flex" : "none";
-    }
 }
 
 
@@ -113,10 +106,6 @@ function proceedToOpenOverlay(url) {
         url: url
     };
 
-    /*
-     * Keep all existing frames alive.
-     * The new frame becomes the topmost layer.
-     */
     overlayStack.push(item);
     pageOverlay.appendChild(frame);
 
@@ -162,16 +151,8 @@ window.requestClosePageOverlay = function () {
     closePageOverlay();
 };
 
-
-/* ==========================================================
-   OUTER CLOSE BUTTON
-========================================================== */
-
-if (pageOverlayClose) {
-    pageOverlayClose.addEventListener("click", function () {
-        closePageOverlay();
-    });
-}
+window.hideMainOverlayClose = function() {};
+window.showMainOverlayClose = function() {};
 
 
 /* ==========================================================
@@ -180,27 +161,9 @@ if (pageOverlayClose) {
 
 window.addEventListener("popstate", function (event) {
     if (overlayStack.length > 0) {
-        // Close only the topmost overlay layer (matches the '×' button action)
         closePageOverlay();
     }
 });
-
-
-/* ==========================================================
-   HELPER FUNCTIONS FOR IFRAMES (e.g., Mass Song Panel)
-========================================================== */
-
-window.hideMainOverlayClose = function() {
-    if (pageOverlayClose) {
-        pageOverlayClose.style.display = "none";
-    }
-};
-
-window.showMainOverlayClose = function() {
-    if (pageOverlayClose && overlayStack.length > 0) {
-        pageOverlayClose.style.display = "flex";
-    }
-};
 
 
 /* ==========================================================
@@ -247,7 +210,7 @@ if (
                 closePageOverlay();
                 return;
             }
-            // If no overlay is open, let app.js handle standard page back/exit behavior
+            // If no overlay is open, app.js handles standard page back/exit behavior
         });
     }
 }
