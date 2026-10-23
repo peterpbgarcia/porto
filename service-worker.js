@@ -3,7 +3,7 @@
    SERVICE WORKER
 ========================================== */
 
-const CACHE_NAME = "compendio-v9.0.12";
+const CACHE_NAME = "compendio-v9.0.14";
 const UPDATE_CACHE_NAME = CACHE_NAME + "-update";
 
 /* ==========================================
@@ -11,20 +11,35 @@ const UPDATE_CACHE_NAME = CACHE_NAME + "-update";
 ========================================== */
 
 const APP_FILES = [
+    "about.html",
     "adoration.html",
     "angelus.html",
     "app-config.json",
     "assets/icon.png",
     "basic-prayers.html",
+    "costituzioni.html",
     "css/guitar-tuner.css",
     "css/overlay.css",
+    "css/religiosi.css",
     "css/songbook.css",
     "css/songbook-viewer.css",
     "css/style.css",
+    "css/subcss.css",
+    "dat/about.htm",
+    "dat/about_files/colorschememapping.xml",
+    "dat/about_files/filelist.xml",
+    "dat/about_files/image001.png",
+    "dat/about_files/image002.jpg",
+    "dat/about_files/themedata.thmx",
+    "dat/costituzioni.xlsx",
+    "dat/dat-rel.xlsx",
+    "dat/direttorio.xlsx",
     "devotions.html",
+    "direttorio.html",
     "evening-prayer.html",
     "favicon.ico",
     "guitar-tuner.html",
+    "icons/app-icon.png",
     "icons/icon-128.webp",
     "icons/icon-192.webp",
     "icons/icon-256.webp",
@@ -35,14 +50,18 @@ const APP_FILES = [
     "icons/logo.png",
     "images/logo.png",
     "index.html",
+    "js/aggiornamenti.js",
     "js/app.js",
+    "js/constitution.js",
     "js/guitar-tuner.js",
     "js/mass-songbook.js",
     "js/overlay.js",
     "js/pdf-songbook-viewer.js",
+    "js/religiosi.js",
     "js/songbook.js",
     "js/songbook-viewer.js",
     "js/songs-generated.js",
+    "js/xlsx.full.min.js",
     "manifest.webmanifest",
     "mass-guide.html",
     "morning-prayer.html",
@@ -240,6 +259,7 @@ const APP_FILES = [
     "pdfjs/web/viewer.html",
     "pdfjs/web/viewer.js",
     "pdf-songbook-viewer.html",
+    "religiosi.html",
     "rosary.html",
     "sesta-nona.html",
     "songbook.html",

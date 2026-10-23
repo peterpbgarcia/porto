@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="css/style.css">
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         html,
         body {
             width: 100%;
@@ -23,49 +27,22 @@
         }
 
         body.pdf-song-viewer-page {
-            display: flex;
-            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
             background: #FFFFFF;
+            color: #222222;
+            font-family: Arial, sans-serif;
         }
 
-        .pdf-song-viewer-header {
-            display: grid;
-            grid-template-columns: 56px 1fr 56px;
-            flex: 0 0 42px;
-            padding: 0 8px;
-        }
-
-        .pdf-header-action {
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            justify-self: center;
-            border: none;
-            border-radius: 50%;
-            background: transparent;
-            cursor: pointer;
-            text-decoration: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .pdf-header-action:active {
-            background: rgb(255 255 255 / 18%);
-        }
-
-        .guitar-button svg {
-            width: 34px;
-            height: 34px;
-        }
+        /* =========================================
+           PDF VIEWPORT (100% Fullscreen)
+        ========================================= */
 
         .pdf-song-viewport {
-            position: relative;
-            flex: 1 1 auto;
-            min-width: 0;
-            min-height: 0;
+            display: block;
             width: 100%;
+            height: 100vh;
+            height: 100dvh;
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -78,67 +55,83 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            border: 0;
+            border: none;
             background: #FFFFFF;
+        }
+
+        /* =========================================
+           FLOATING GUITAR TUNER BUTTON
+           Matches catalogue & songbook pages
+        ========================================= */
+
+        .floating-menu-wrapper {
+            position: fixed;
+            right: 16px;
+            bottom: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            transition: opacity 0.4s ease;
+        }
+
+        .floating-main-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border: none;
+            border-radius: 50%;
+            background: #176a9b;
+            color: #FFFFFF;
+            box-shadow: 0 4px 16px rgba(23, 106, 155, 0.35);
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, background 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .floating-main-btn svg {
+            display: block;
+            width: 26px;
+            height: 26px;
+        }
+
+        .floating-main-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Inactivity Faded State */
+        .floating-menu-wrapper.is-faded {
+            opacity: 0.25;
+        }
+
+        .floating-menu-wrapper.is-faded:hover {
+            opacity: 1;
+        }
+
+        /* Desktop expansion */
+        @media (min-width: 601px) {
+            .floating-menu-wrapper {
+                right: 24px;
+                bottom: 28px;
+            }
+            .floating-main-btn {
+                width: 56px;
+                height: 56px;
+            }
+            .floating-main-btn svg {
+                width: 30px;
+                height: 30px;
+            }
         }
     </style>
 </head>
 
 <body class="pdf-song-viewer-page">
 
-<header class="pdf-song-viewer-header">
-    <a
-        id="openTuner"
-        href="guitar-tuner.html"
-        class="pdf-header-action guitar-button"
-        aria-label="Apri accordatore"
-        title="Accordatore"
-    >
-        <svg
-            viewBox="0 0 100 100"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-            focusable="false"
-        >
-            <!-- Guitar pick -->
-            <path
-                d="M50 12
-                   C36 12 17 22 18 39
-                   C19 57 39 78 50 87
-                   C61 78 81 57 82 39
-                   C83 22 64 12 50 12Z"
-                fill="#FFFFFF"
-            />
-
-            <!-- Tuning fork -->
-            <path
-                d="M39 37 V30
-                   Q39 25 44 25
-                   M61 37 V30
-                   Q61 25 56 25
-                   M39 37 V44
-                   Q39 49 44 49
-                   H56
-                   Q61 49 61 44
-                   V37
-                   M50 49 V65"
-                fill="none"
-                stroke="#1683c6"
-                stroke-width="4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            />
-
-            <circle
-                cx="50"
-                cy="69"
-                r="3"
-                fill="#1683c6"
-            />
-        </svg>
-    </a>
-</header>
-
+    <!-- Fullscreen PDF Viewport -->
     <main class="pdf-song-viewport">
         <iframe
             id="pdfFrame"
@@ -147,9 +140,60 @@
         ></iframe>
     </main>
 
+    <!-- Floating Guitar Tuner Button Wrapper (with auto-fade) -->
+    <div id="floatingMusicMenu" class="floating-menu-wrapper">
+        <a
+            id="openTuner"
+            href="guitar-tuner.html"
+            class="floating-main-btn"
+            aria-label="Apri accordatore"
+            title="Accordatore"
+        >
+            <svg
+                viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                focusable="false"
+            >
+                <path
+                    d="M50 12 C36 12 17 22 18 39 C19 57 39 78 50 87 C61 78 81 57 82 39 C83 22 64 12 50 12Z"
+                    fill="#FFFFFF"
+                />
+                <path
+                    d="M39 37 V30 Q39 25 44 25 M61 37 V30 Q61 25 56 25 M39 37 V44 Q39 49 44 49 H56 Q61 49 61 44 V37 M50 49 V65"
+                    fill="none"
+                    stroke="#1683c6"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <circle cx="50" cy="69" r="3" fill="#1683c6" />
+            </svg>
+        </a>
+    </div>
+
     <!-- JavaScript -->
     <script src="js/app.js"></script>
     <script src="js/pdf-songbook-viewer.js"></script>
+    <script>
+        // Auto-fade inactivity timer for the floating button
+        const menuWrapper = document.getElementById("floatingMusicMenu");
+        let fadeTimeout;
+
+        function resetFadeTimer() {
+            if (!menuWrapper) return;
+            clearTimeout(fadeTimeout);
+            menuWrapper.classList.remove("is-faded");
+            fadeTimeout = setTimeout(() => {
+                menuWrapper.classList.add("is-faded");
+            }, 4000);
+        }
+
+        window.addEventListener("mousemove", resetFadeTimer);
+        window.addEventListener("touchstart", resetFadeTimer, { passive: true });
+        window.addEventListener("scroll", resetFadeTimer, { passive: true });
+        resetFadeTimer();
+    </script>
 
 </body>
 </html>

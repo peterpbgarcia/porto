@@ -16,16 +16,45 @@
 
 <body class="new-songbook-page">
 
-<header class="songbook-header">
+    <main class="songbook-main">
 
-    <!-- Guitar tuner: LEFT -->
+
+        <div class="song-search-wrapper">
+            <input
+                type="search"
+                id="searchSong"
+                placeholder="Cerca un canto..."
+                autocomplete="off"
+                aria-label="Cerca un canto per titolo o numero"
+            >
+
+            <button
+                type="button"
+                id="clearSearch"
+                aria-label="Cancella ricerca"
+                hidden
+            >×</button>
+        </div>
+
+        <div
+            id="songCategories"
+            class="song-categories"
+            aria-live="polite"
+        ></div>
+
+        <p id="noSongsFound" hidden>
+            Nessun canto trovato.
+        </p>
+
+    </main>
+
+    <!-- Floating Guitar Tuner Button -->
     <a
         id="openTuner"
         href="guitar-tuner.html"
-        class="header-action guitar-button"
+        class="floating-tuner"
         aria-label="Apri accordatore"
         title="Accordatore"
-        style="text-decoration: none;"
     >
         <!-- Guitar tuner icon -->
         <svg
@@ -56,42 +85,6 @@
             <circle cx="50" cy="69" r="3" fill="#1683c6" />
         </svg>
     </a>
-
-    <!-- Title -->
-    <h1>Canti</h1>
-
-</header>
-
-    <main class="songbook-main">
-
-        <div class="song-search-wrapper">
-            <input
-                type="search"
-                id="searchSong"
-                placeholder="Cerca un canto..."
-                autocomplete="off"
-                aria-label="Cerca un canto per titolo o numero"
-            >
-
-            <button
-                type="button"
-                id="clearSearch"
-                aria-label="Cancella ricerca"
-                hidden
-            >×</button>
-        </div>
-
-        <div
-            id="songCategories"
-            class="song-categories"
-            aria-live="polite"
-        ></div>
-
-        <p id="noSongsFound" hidden>
-            Nessun canto trovato.
-        </p>
-
-    </main>
 
     <!-- JavaScript -->
     <script src="js/app.js"></script>

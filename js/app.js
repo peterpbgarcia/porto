@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ==========================================================
    PRAYER LANGUAGE / MYSTERY SWITCHER
-========================================================== */
+========================================== */
 
 function showPrayer(language, button) {
 
@@ -242,3 +242,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+

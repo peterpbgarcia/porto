@@ -34,7 +34,8 @@
         return;
     }
 
-    let expandedCategory = null;
+    // Restore previously expanded category from session storage if returning from a song
+    let expandedCategory = sessionStorage.getItem("songbookExpandedCategory") || null;
 
     // Existing manually configured PDF songbooks.
     const PDF_SONGBOOKS = {
@@ -258,7 +259,6 @@
         const chevron = createElement(
             "span",
             "song-category-chevron",
-            "›"
         );
 
         chevron.setAttribute("aria-hidden", "true");
@@ -302,6 +302,13 @@
                 expandedCategory === categoryId
                     ? null
                     : categoryId;
+
+            // Save state to sessionStorage so it persists when returning from a song view
+            if (expandedCategory) {
+                sessionStorage.setItem("songbookExpandedCategory", expandedCategory);
+            } else {
+                sessionStorage.removeItem("songbookExpandedCategory");
+            }
 
             render();
         });
@@ -347,6 +354,7 @@
     clearButton.addEventListener("click", () => {
         searchInput.value = "";
         expandedCategory = null;
+        sessionStorage.removeItem("songbookExpandedCategory");
 
         render();
 
@@ -354,8 +362,21 @@
     });
 
     /* ==================================================
-       INITIALIZE
+       INITIALIZE & RESTORE SCROLL/FOCUS
     ================================================== */
 
     render();
+
+    // If a category was expanded, scroll it nicely into view after render
+    if (expandedCategory && !searchInput.value) {
+        setTimeout(() => {
+            const activeSection = Array.from(categoriesContainer.children).find(sec => {
+                const btn = sec.querySelector(".song-category-toggle");
+                return btn && btn.getAttribute("aria-expanded") === "true";
+            });
+            if (activeSection) {
+                activeSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+        }, 50);
+    }
 })();

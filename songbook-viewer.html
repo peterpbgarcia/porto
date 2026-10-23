@@ -17,99 +17,7 @@
 
 <body class="song-viewer-page">
 
-  <header class="song-viewer-header">
-
-    <!-- Guitar tuner: LEFT -->
-    <a
-      id="openTuner"
-      href="guitar-tuner.html"
-      class="header-action guitar-button"
-      aria-label="Apri accordatore"
-      title="Accordatore"
-    >
-      <svg
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <!-- Guitar pick -->
-        <path
-          d="M50 12
-             C36 12 17 22 18 39
-             C19 57 39 78 50 87
-             C61 78 81 57 82 39
-             C83 22 64 12 50 12Z"
-          fill="#FFFFFF"
-        />
-
-        <!-- Tuning fork -->
-        <path
-          d="M39 37 V30
-             Q39 25 44 25
-             M61 37 V30
-             Q61 25 56 25
-             M39 37 V44
-             Q39 49 44 49
-             H56
-             Q61 49 61 44
-             V37
-             M50 49 V65"
-          fill="none"
-          stroke="#1683c6"
-          stroke-width="4"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        <!-- Fork tip -->
-        <circle
-          cx="50"
-          cy="69"
-          r="3"
-          fill="#1683c6"
-        />
-      </svg>
-    </a>
-
-    <!-- Transposition: CENTER -->
-    <div
-      class="transpose-controls"
-      role="group"
-      aria-label="Trasposizione"
-    >
-      <button
-        id="transposeDown"
-        class="transpose-button"
-        type="button"
-        aria-label="Abbassa di un semitono"
-      >
-        −
-      </button>
-
-      <button
-        id="transposeReset"
-        class="transpose-value"
-        type="button"
-        aria-label="Ripristina tonalità originale"
-        title="Ripristina tonalità originale"
-      >
-        0
-      </button>
-
-      <button
-        id="transposeUp"
-        class="transpose-button"
-        type="button"
-        aria-label="Alza di un semitono"
-      >
-        +
-      </button>
-    </div>
-
-  </header>
-
-  <!-- Song content -->
+  <!-- Fullscreen Song Viewport -->
   <main class="song-viewport">
     <iframe
       id="songFrame"
@@ -117,6 +25,63 @@
       src="about:blank"
     ></iframe>
   </main>
+
+  <!-- Direct Floating Tools Bar (Tuner & Transposition) -->
+  <div id="floatingMusicMenu" class="floating-menu-wrapper">
+    <div id="floatingSubActions" class="floating-sub-actions">
+
+      <!-- Guitar Tuner Button -->
+      <a
+        id="openTuner"
+        href="guitar-tuner.html"
+        class="floating-sub-item"
+        aria-label="Apri accordatore"
+        title="Accordatore"
+      >
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <path d="M50 12 C36 12 17 22 18 39 C19 57 39 78 50 87 C61 78 81 57 82 39 C83 22 64 12 50 12Z" fill="#FFFFFF"/>
+          <path d="M39 37 V30 Q39 25 44 25 M61 37 V30 Q61 25 56 25 M39 37 V44 Q39 49 44 49 H56 Q61 49 61 44 V37 M50 49 V65" fill="none" stroke="#176A9B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="50" cy="69" r="3" fill="#176A9B" />
+        </svg>
+      </a>
+
+      <!-- Transposition Controls -->
+      <div
+        class="transpose-controls"
+        role="group"
+        aria-label="Trasposizione"
+      >
+        <button
+          id="transposeDown"
+          class="transpose-button"
+          type="button"
+          aria-label="Abbassa di un semitono"
+        >
+          −
+        </button>
+
+        <button
+          id="transposeReset"
+          class="transpose-value"
+          type="button"
+          aria-label="Ripristina tonalità originale"
+          title="Ripristina tonalità originale"
+        >
+          0
+        </button>
+
+        <button
+          id="transposeUp"
+          class="transpose-button"
+          type="button"
+          aria-label="Alza di un semitono"
+        >
+          +
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- JavaScript -->
   <script src="js/app.js"></script>

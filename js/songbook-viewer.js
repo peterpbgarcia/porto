@@ -2,12 +2,7 @@
 
 /* =========================================================
    SONGBOOK VIEWER
-   HTML songs, chord transposition and guitar tuner
-========================================================= */
-
-
-/* =========================================================
-   ELEMENTS AND STATE
+   HTML songs, chord transposition, and floating tools
 ========================================================= */
 
 const params = new URLSearchParams(window.location.search);
@@ -18,10 +13,44 @@ const minusButton = document.getElementById("transposeDown");
 const plusButton = document.getElementById("transposeUp");
 const resetButton = document.getElementById("transposeReset");
 
+// Floating Menu Elements
+const menuWrapper = document.getElementById("floatingMusicMenu");
+const subActions = document.getElementById("floatingSubActions");
+
 let semitones = 0;
 let originalBodyHTML = null;
 let songDocument = null;
+let fadeTimeout = null;
 
+/* =========================================================
+   FLOATING MENU FADE LOGIC
+========================================================= */
+
+function resetFadeTimer() {
+    if (!menuWrapper) return;
+
+    clearTimeout(fadeTimeout);
+    menuWrapper.classList.remove("is-faded");
+
+    // Fade out bar after 4 seconds of inactivity
+    fadeTimeout = setTimeout(() => {
+        menuWrapper.classList.add("is-faded");
+    }, 4000);
+}
+
+if (subActions) {
+    subActions.addEventListener("click", (e) => {
+        e.stopPropagation();
+        resetFadeTimer();
+    });
+
+    window.addEventListener("mousemove", resetFadeTimer);
+    window.addEventListener("touchstart", resetFadeTimer, { passive: true });
+    window.addEventListener("scroll", resetFadeTimer, { passive: true });
+    
+    // Start initial timer
+    resetFadeTimer();
+}
 
 /* =========================================================
    TRANSPOSITION DISPLAY
@@ -43,9 +72,8 @@ function updateTransposeDisplay() {
 
 updateTransposeDisplay();
 
-
 /* =========================================================
-   ITALIAN NOTE NAMES
+   ITALIAN NOTE NAMES & TRANSPOSITION CORE
 ========================================================= */
 
 const ITALIAN_NOTES = {
@@ -65,54 +93,30 @@ const NOTE_NAMES = [
 
 function getNoteValue(note, accidental = "") {
     const base = ITALIAN_NOTES[note.toUpperCase()];
-
     if (base === undefined) return null;
-
     let value = base;
-
     if (accidental === "#") value += 1;
     else if (accidental.toLowerCase() === "b") value -= 1;
-
     return ((value % 12) + 12) % 12;
 }
 
-
-/* =========================================================
-   TRANSPOSE CHORDS
-========================================================= */
-
 function transposeChordPart(part, steps) {
     if (!part || steps === 0) return part;
-
-    const match = part.match(
-        /^(DO|RE|MI|FA|SOL|LA|SI)(#|b)?(.*)$/i
-    );
-
+    const match = part.match(/^(DO|RE|MI|FA|SOL|LA|SI)(#|b)?(.*)$/i);
     if (!match) return part;
-
     const note = match[1].toUpperCase();
     const accidental = match[2] || "";
     const suffix = match[3] || "";
-
     const originalValue = getNoteValue(note, accidental);
-
     if (originalValue === null) return part;
-
-    const newValue =
-        ((originalValue + steps) % 12 + 12) % 12;
-
+    const newValue = ((originalValue + steps) % 12 + 12) % 12;
     return NOTE_NAMES[newValue] + suffix;
 }
 
 function transposeChordToken(token, steps) {
     if (steps === 0) return token;
-
-    return token
-        .split("/")
-        .map(part => transposeChordPart(part, steps))
-        .join("/");
+    return token.split("/").map(part => transposeChordPart(part, steps)).join("/");
 }
-
 
 /* =========================================================
    LOAD SONG
@@ -120,9 +124,7 @@ function transposeChordToken(token, steps) {
 
 async function loadSong() {
     if (!songFrame || !songFile) {
-        console.error(
-            "Song viewer: missing song file parameter or iframe."
-        );
+        console.error("Song viewer: missing song file parameter or iframe.");
         return;
     }
 
@@ -133,86 +135,50 @@ async function loadSong() {
         );
 
         if (!response.ok) {
-            throw new Error(
-                `Impossibile caricare il canto: HTTP ${response.status}`
-            );
+            throw new Error(`Impossibile caricare il canto: HTTP ${response.status}`);
         }
 
         const buffer = await response.arrayBuffer();
         const html = new TextDecoder("windows-1252").decode(buffer);
-
         songFrame.srcdoc = html;
 
     } catch (error) {
         console.error("Song viewer:", error);
-
         document.title = "Errore caricamento canto";
-
         songFrame.srcdoc = `
             <!DOCTYPE html>
             <html lang="it">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport"
-                      content="width=device-width, initial-scale=1">
-                <style>
-                    body {
-                        padding: 20px;
-                        font-family: Arial, sans-serif;
-                        color: #222;
-                    }
-                </style>
-            </head>
-            <body>
-                <p>Impossibile caricare il canto.</p>
-                <p>Controlla il percorso del file.</p>
-            </body>
+            <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+            <body><p>Impossibile caricare il canto.</p></body>
             </html>
         `;
     }
 }
 
-
-/* =========================================================
-   SONG LOADED
-========================================================= */
-
 songFrame?.addEventListener("load", () => {
     try {
         const doc = songFrame.contentDocument;
-
-        if (!doc || !doc.body) {
-            console.error(
-                "Impossibile accedere al contenuto del canto."
-            );
-            return;
-        }
+        if (!doc || !doc.body) return;
 
         songDocument = doc;
-
         if (originalBodyHTML === null) {
             originalBodyHTML = doc.body.innerHTML;
         }
 
         doc.body.style.backgroundColor = "#FFFFFF";
 
+        doc.addEventListener("touchstart", resetFadeTimer, { passive: true });
+        doc.addEventListener("mousemove", resetFadeTimer);
+        doc.addEventListener("scroll", resetFadeTimer, { passive: true });
+
         applyTransposition();
-
-        console.log("Song loaded successfully.");
-
     } catch (error) {
-        console.error("Error accessing the song:", error);
+        console.error("Error accessing song:", error);
     }
 });
 
-
-/* =========================================================
-   APPLY TRANSPOSITION
-========================================================= */
-
 function applyTransposition() {
     const doc = songDocument;
-
     if (!doc || !doc.body || originalBodyHTML === null) return;
 
     doc.body.innerHTML = originalBodyHTML;
@@ -225,14 +191,9 @@ function applyTransposition() {
     );
 
     chordParagraphs.forEach(paragraph => {
-        const walker = doc.createTreeWalker(
-            paragraph,
-            NodeFilter.SHOW_TEXT
-        );
-
+        const walker = doc.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
         const textNodes = [];
         let node;
-
         while ((node = walker.nextNode())) {
             textNodes.push(node);
         }
@@ -245,11 +206,6 @@ function applyTransposition() {
         });
     });
 }
-
-
-/* =========================================================
-   TRANSPOSITION BUTTONS
-========================================================= */
 
 minusButton?.addEventListener("click", () => {
     semitones--;
@@ -269,9 +225,15 @@ resetButton?.addEventListener("click", () => {
     applyTransposition();
 });
 
-
 /* =========================================================
-   START
+   START & BACK-FORWARD CACHE FIX
 ========================================================= */
 
 loadSong();
+
+// Force reload song content when navigating back from the guitar tuner
+window.addEventListener("pageshow", () => {
+    originalBodyHTML = null;
+    songDocument = null;
+    loadSong();
+});

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+    >
+    <meta name="theme-color" content="#4AAEE8">
+
+    <title>Informazioni</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body.about-page {
+            height: 100vh;
+            height: 100dvh;
+            background: #FFFFFF;
+            color: #222222;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* =========================================
+           FULLSCREEN / CENTERED ABOUT VIEWPORT
+        ========================================= */
+
+        .about-viewport {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #FFFFFF;
+        }
+
+        .about-viewport iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: none;
+            background: #FFFFFF;
+        }
+    </style>
+</head>
+
+<body class="about-page">
+
+    <!-- Centered Viewport for about.htm -->
+    <main class="about-viewport">
+        <iframe
+            id="aboutFrame"
+            title="Informazioni sull'applicazione"
+            src="dat/about.htm"
+        ></iframe>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+
+</body>
+</html>
