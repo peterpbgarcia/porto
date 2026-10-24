@@ -9,6 +9,23 @@
    colors
 ========================================================== */
 
+/* ==========================================================
+   GLOBAL VIEWPORT & CENTERING FIX
+========================================================== */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
 
 /* ==========================================================
    TUNER PAGE
@@ -23,6 +40,8 @@
     margin: 0 auto;
 
     padding: 16px 14px 40px;
+    
+    box-sizing: border-box;
 
 }
 
