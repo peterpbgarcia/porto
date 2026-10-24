@@ -1,188 +1,80 @@
 "use strict";
 
 /* ==========================================================
-   FULL-SCREEN OVERLAY STACK
-   COMPENDIUM 9.0 (Modal & Special Viewer Manager)
-
-   - Used specifically for popups like Songbook Viewer, Guitar Tuner, and Footer PDFs.
-   - Closing removes only the topmost overlay layer via back button / gesture.
-========================================================== */
-
-
-/* ==========================================================
-   ELEMENTS AND STATE
+   SINGLE OVERLAY MANAGER (NO STACKING)
 ========================================================== */
 
 const pageOverlay = document.getElementById("pageOverlay");
-const overlayStack = [];
+const pageOverlayFrame = document.getElementById("pageOverlayFrame");
+const pageOverlayClose = document.getElementById("pageOverlayClose");
 
-let backButtonListenerRegistered = false;
-
-
-/* ==========================================================
-   VIEWER DETECTION
-========================================================== */
-
-function isSongbookViewer(url) {
-    return /(?:^|\/)(?:songbook-viewer|pdf-songbook-viewer)\.html(?:[?#]|$)/i
-        .test(String(url || ""));
-}
-
+let backButtonRegistered = false;
 
 /* ==========================================================
-   UPDATE STACK
-========================================================== */
-
-function updateOverlayStack() {
-    if (!pageOverlay) return;
-
-    const hasOverlays = overlayStack.length > 0;
-    const topIndex = overlayStack.length - 1;
-
-    pageOverlay.classList.toggle("active", hasOverlays);
-    pageOverlay.setAttribute("aria-hidden", String(!hasOverlays));
-
-    document.body.classList.toggle("overlay-open", hasOverlays);
-
-    overlayStack.forEach((item, index) => {
-        const isTop = index === topIndex;
-
-        item.frame.classList.toggle("overlay-top", isTop);
-        item.frame.style.zIndex = String(index + 1);
-        item.frame.style.visibility = isTop ? "visible" : "hidden";
-        item.frame.style.pointerEvents = isTop ? "auto" : "none";
-        item.frame.setAttribute("aria-hidden", String(!isTop));
-
-        // Notify iframe layer of its visibility state
-        try {
-            if (item.frame.contentWindow && typeof item.frame.contentWindow.handleLayerVisibility === "function") {
-                item.frame.contentWindow.handleLayerVisibility(isTop);
-            }
-        } catch (e) {}
-    });
-}
-
-
-/* ==========================================================
-   OPEN A NEW OVERLAY (WITH ANDROID PERMISSION BRIDGE)
+   OPEN & CLOSE OVERLAY
 ========================================================== */
 
 function openPageOverlay(url) {
-    if (!pageOverlay || !url) return;
+    if (!pageOverlay || !pageOverlayFrame || !url) return;
 
-    const targetUrl = String(url);
-    const isTuner = targetUrl.toLowerCase().includes("tuner");
+    // Direct the SINGLE existing iframe to the target URL
+    pageOverlayFrame.src = String(url);
 
-    // If opening the guitar tuner on Android, request permission natively first
-    if (isTuner && window.cordova && window.plugins && window.plugins.permissions) {
-        const permissions = window.plugins.permissions;
-        permissions.requestPermission(
-            permissions.RECORD_AUDIO,
-            function(status) {
-                proceedToOpenOverlay(targetUrl);
-            },
-            function(err) {
-                console.warn("Android permission request failed:", err);
-                proceedToOpenOverlay(targetUrl);
-            }
-        );
-        return;
-    }
+    pageOverlay.classList.add("active");
+    pageOverlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("overlay-open");
 
-    proceedToOpenOverlay(targetUrl);
-}
-
-function proceedToOpenOverlay(url) {
-    const frame = document.createElement("iframe");
-
-    frame.className = "page-overlay-frame";
-    frame.title = "Contenuto";
-    frame.setAttribute("allow", "microphone; camera; midi; encrypted-media");
-    frame.setAttribute("allowfullscreen", "");
-    frame.setAttribute("loading", "eager");
-
-    const item = {
-        frame: frame,
-        url: url
-    };
-
-    overlayStack.push(item);
-    pageOverlay.appendChild(frame);
-
-    // Push history state so browser back button / swipe gesture closes the overlay
     if (typeof history.pushState === "function") {
         history.pushState({ overlayOpen: true }, "", window.location.href);
     }
-
-    updateOverlayStack();
-
-    frame.src = item.url;
 }
-
-
-/* ==========================================================
-   CLOSE ONLY THE TOPMOST OVERLAY
-========================================================== */
 
 function closePageOverlay() {
-    if (!pageOverlay || overlayStack.length === 0) return;
+    if (!pageOverlay || !pageOverlayFrame) return;
 
-    const item = overlayStack.pop();
+    pageOverlay.classList.remove("active");
+    pageOverlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("overlay-open");
 
-    item.frame.src = "about:blank";
-    item.frame.remove();
-
-    updateOverlayStack();
+    // Clear iframe source
+    pageOverlayFrame.src = "about:blank";
 }
 
+// Bind top-level close "X" button
+if (pageOverlayClose) {
+    pageOverlayClose.addEventListener("click", closePageOverlay);
+}
 
 /* ==========================================================
-   FUNCTIONS AVAILABLE TO INNER PAGES
+   EXPORTS
 ========================================================== */
 
 window.openPageOverlay = openPageOverlay;
 window.closePageOverlay = closePageOverlay;
-
-window.requestOpenPageOverlay = function (url) {
-    openPageOverlay(url);
-};
-
-window.requestClosePageOverlay = function () {
-    closePageOverlay();
-};
-
-window.hideMainOverlayClose = function() {};
-window.showMainOverlayClose = function() {};
-
+window.requestOpenPageOverlay = openPageOverlay;
+window.requestClosePageOverlay = closePageOverlay;
 
 /* ==========================================================
-   BROWSER BACK BUTTON / SWIPE GESTURE SUPPORT
+   BACK BUTTON / SWIPE GESTURE
 ========================================================== */
 
-window.addEventListener("popstate", function (event) {
-    if (overlayStack.length > 0) {
+window.addEventListener("popstate", function () {
+    if (pageOverlay && pageOverlay.classList.contains("active")) {
         closePageOverlay();
     }
 });
 
-
 /* ==========================================================
-   GUITAR TUNER LINK
+   FOOTER / GUITAR LINKS
 ========================================================== */
 
 const guitarLink = document.querySelector(".guitar-link");
-
 if (guitarLink) {
     guitarLink.addEventListener("click", function (event) {
         event.preventDefault();
         openPageOverlay(guitarLink.href);
     });
 }
-
-
-/* ==========================================================
-   FOOTER PDF LINKS
-========================================================== */
 
 document.querySelectorAll(".songbook-footer a").forEach(function (link) {
     link.addEventListener("click", function (event) {
@@ -191,26 +83,14 @@ document.querySelectorAll(".songbook-footer a").forEach(function (link) {
     });
 });
 
-
-/* ==========================================================
-   ANDROID / CAPACITOR BACK BUTTON (FOR OVERLAYS ONLY)
-========================================================== */
-
-if (
-    window.Capacitor &&
-    window.Capacitor.isNativePlatform()
-) {
+if (window.Capacitor && window.Capacitor.isNativePlatform()) {
     const App = window.Capacitor.Plugins?.App;
-
-    if (App && !backButtonListenerRegistered) {
-        backButtonListenerRegistered = true;
-
+    if (App && !backButtonRegistered) {
+        backButtonRegistered = true;
         App.addListener("backButton", function () {
-            if (overlayStack.length > 0) {
+            if (pageOverlay && pageOverlay.classList.contains("active")) {
                 closePageOverlay();
-                return;
             }
-            // If no overlay is open, app.js handles standard page back/exit behavior
         });
     }
 }

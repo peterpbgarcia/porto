@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 /* ======================================================
-    OPEN SONG PANEL
+   OPEN SONG PANEL
 ====================================================== */
 
 function openSongPanel(categoryValue, section) {
@@ -281,7 +281,7 @@ function openSongPanel(categoryValue, section) {
 
 
     /* ==================================================
-        REMOVE DUPLICATE SONG FILES
+       REMOVE DUPLICATE SONG FILES
     ================================================== */
 
     const seenFiles = new Set();
@@ -294,7 +294,7 @@ function openSongPanel(categoryValue, section) {
 
 
     /* ==================================================
-        SET PANEL TITLE & CLEAR LIST
+       SET PANEL TITLE & CLEAR LIST
     ================================================== */
 
     title.textContent = massCategoryName
@@ -312,7 +312,7 @@ function openSongPanel(categoryValue, section) {
 
 
     /* ==================================================
-        CREATE SONG ITEMS
+       CREATE SONG ITEMS
     ================================================== */
 
     matchingSongs.forEach(song => {
@@ -329,8 +329,8 @@ function openSongPanel(categoryValue, section) {
         item.appendChild(name);
 
 
-/* ==============================================
-            OPEN THE SELECTED SONG
+        /* ==============================================
+            OPEN THE SELECTED SONG AS A NORMAL PAGE LINK
         ============================================== */
 
         item.addEventListener("click", () => {
@@ -354,23 +354,8 @@ function openSongPanel(categoryValue, section) {
                 viewer + "?file=" +
                 encodeURIComponent(song.file);
 
-
-            /* 
-                1. Close the song list panel modal cleanly
-            */
-            closeSongPanel();
-
-
-            /* 
-                2. Open the viewer on top using the parent overlay stack
-            */
-            if (window.parent && typeof window.parent.openPageOverlay === "function") {
-                window.parent.openPageOverlay(viewerURL);
-            } else if (typeof openPageOverlay === "function") {
-                openPageOverlay(viewerURL);
-            } else {
-                console.error("openPageOverlay() was not found.");
-            }
+            // Navigate the main window directly (no overlay stacking)
+            window.top.location.href = viewerURL;
 
         });
 
@@ -380,7 +365,7 @@ function openSongPanel(categoryValue, section) {
 
 
     /* ==================================================
-        SHOW PANEL & HIDE MAIN OVERLAY CLOSE BUTTON
+       SHOW PANEL & HIDE MAIN OVERLAY CLOSE BUTTON
     ================================================== */
 
     massSongOpen = true;
@@ -394,7 +379,7 @@ function openSongPanel(categoryValue, section) {
 
 
 /* ======================================================
-    CLOSE PANEL
+   CLOSE PANEL
 ====================================================== */
 
 function closeSongPanel() {
@@ -410,7 +395,7 @@ function closeSongPanel() {
 
 
     /* ======================================================
-        CLOSE BUTTON & TAP OUTSIDE & ESC KEY
+       CLOSE BUTTON & TAP OUTSIDE & ESC KEY
     ====================================================== */
 
     closeButton.addEventListener("click", () => {
